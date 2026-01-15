@@ -691,11 +691,13 @@ export default function ForfettarioApp() {
   const today = formatDate(new Date());
   
   // Helper per selettore anno
-  const yearOptions = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
+  const currentYear = new Date().getFullYear();
+  const minYear = Math.max(config.annoApertura, currentYear - 10);
+  const yearOptions = Array.from({ length: currentYear - minYear + 1 }, (_, i) => currentYear - i);
   
   // Componente badge dati storici
   const HistoricalDataBadge = () => {
-    if (annoSelezionato >= new Date().getFullYear()) return null;
+    if (annoSelezionato >= currentYear) return null;
     return (
       <div style={{ 
         padding: '8px 16px', 
@@ -776,6 +778,7 @@ export default function ForfettarioApp() {
                   <button 
                     className="btn" 
                     onClick={() => setAnnoSelezionato(annoSelezionato - 1)}
+                    disabled={annoSelezionato <= minYear}
                     style={{ padding: '8px 12px' }}
                     aria-label="Anno precedente"
                   >
@@ -795,7 +798,7 @@ export default function ForfettarioApp() {
                   <button 
                     className="btn" 
                     onClick={() => setAnnoSelezionato(annoSelezionato + 1)}
-                    disabled={annoSelezionato >= new Date().getFullYear()}
+                    disabled={annoSelezionato >= currentYear}
                     style={{ padding: '8px 12px' }}
                     aria-label="Anno successivo"
                   >
@@ -920,6 +923,7 @@ export default function ForfettarioApp() {
                     <button 
                       className="btn btn-secondary" 
                       onClick={() => setAnnoSelezionato(annoSelezionato - 1)}
+                      disabled={annoSelezionato <= minYear}
                       style={{ padding: '8px 12px' }}
                       aria-label="Anno precedente"
                     >
@@ -939,7 +943,7 @@ export default function ForfettarioApp() {
                     <button 
                       className="btn btn-secondary" 
                       onClick={() => setAnnoSelezionato(annoSelezionato + 1)}
-                      disabled={annoSelezionato >= new Date().getFullYear()}
+                      disabled={annoSelezionato >= currentYear}
                       style={{ padding: '8px 12px' }}
                       aria-label="Anno successivo"
                     >
