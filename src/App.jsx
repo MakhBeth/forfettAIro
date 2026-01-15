@@ -437,6 +437,7 @@ export default function ForfettarioApp() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [dbReady, setDbReady] = useState(false);
   const [toast, setToast] = useState(null);
+  const [annoSelezionato, setAnnoSelezionato] = useState(new Date().getFullYear());
   
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [clienti, setClienti] = useState([]);
@@ -540,7 +541,7 @@ export default function ForfettarioApp() {
   
   const fattureAnnoCorrente = fatture.filter(f => {
     const dataRiferimento = f.dataIncasso || f.data;
-    return new Date(dataRiferimento).getFullYear() === annoCorrente;
+    return new Date(dataRiferimento).getFullYear() === annoSelezionato;
   });
   const totaleFatturato = fattureAnnoCorrente.reduce((sum, f) => sum + f.importo, 0);
   const percentualeLimite = (totaleFatturato / LIMITE_FATTURATO) * 100;
@@ -695,11 +696,11 @@ export default function ForfettarioApp() {
   }));
   
   const mesiData = Array.from({ length: 12 }, (_, i) => ({
-    mese: new Date(annoCorrente, i, 1).toLocaleString('it-IT', { month: 'short' }),
+    mese: new Date(annoSelezionato, i, 1).toLocaleString('it-IT', { month: 'short' }),
     totale: fatture.filter(f => { 
       const dataRiferimento = f.dataIncasso || f.data;
       const d = new Date(dataRiferimento); 
-      return d.getMonth() === i && d.getFullYear() === annoCorrente; 
+      return d.getMonth() === i && d.getFullYear() === annoSelezionato; 
     }).reduce((sum, f) => sum + f.importo, 0)
   }));
 
@@ -745,10 +746,54 @@ export default function ForfettarioApp() {
           {/* DASHBOARD */}
           {currentPage === 'dashboard' && (
             <>
-              <div className="page-header">
-                <h1 className="page-title">Dashboard {annoCorrente}</h1>
-                <p className="page-subtitle">Panoramica della tua attività</p>
+              <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h1 className="page-title">Dashboard {annoSelezionato}</h1>
+                  <p className="page-subtitle">Panoramica della tua attività</p>
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button 
+                    className="btn" 
+                    onClick={() => setAnnoSelezionato(annoSelezionato - 1)}
+                    style={{ padding: '8px 12px' }}
+                  >
+                    ←
+                  </button>
+                  <select 
+                    className="input-field" 
+                    value={annoSelezionato} 
+                    onChange={(e) => setAnnoSelezionato(parseInt(e.target.value))}
+                    style={{ width: 'auto', padding: '8px 12px', fontSize: '1rem', fontWeight: 600 }}
+                  >
+                    {Array.from({ length: 10 }, (_, i) => {
+                      const year = new Date().getFullYear() - i;
+                      return <option key={year} value={year}>{year}</option>;
+                    })}
+                  </select>
+                  <button 
+                    className="btn" 
+                    onClick={() => setAnnoSelezionato(annoSelezionato + 1)}
+                    disabled={annoSelezionato >= new Date().getFullYear()}
+                    style={{ padding: '8px 12px' }}
+                  >
+                    →
+                  </button>
+                </div>
               </div>
+              
+              {annoSelezionato < new Date().getFullYear() && (
+                <div style={{ 
+                  padding: '8px 16px', 
+                  background: 'var(--accent-orange)', 
+                  color: 'white', 
+                  borderRadius: 8, 
+                  fontSize: '0.85rem',
+                  display: 'inline-block',
+                  marginBottom: 20
+                }}>
+                  📊 Dati storici {annoSelezionato}
+                </div>
+              )}
               
               <div className="grid-4">
                 <div className="card">
@@ -859,17 +904,67 @@ export default function ForfettarioApp() {
                   <h1 className="page-title">Fatture</h1>
                   <p className="page-subtitle">Gestisci le tue fatture elettroniche</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => setShowModal('upload-fattura')}>
-                  <Upload size={18} /> Carica XML
-                </button>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <button 
+                      className="btn btn-secondary" 
+                      onClick={() => setAnnoSelezionato(annoSelezionato - 1)}
+                      style={{ padding: '8px 12px' }}
+                    >
+                      ←
+                    </button>
+                    <select 
+                      className="input-field" 
+                      value={annoSelezionato} 
+                      onChange={(e) => setAnnoSelezionato(parseInt(e.target.value))}
+                      style={{ width: 'auto', padding: '8px 12px' }}
+                    >
+                      {Array.from({ length: 10 }, (_, i) => {
+                        const year = new Date().getFullYear() - i;
+                        return <option key={year} value={year}>{year}</option>;
+                      })}
+                    </select>
+                    <button 
+                      className="btn btn-secondary" 
+                      onClick={() => setAnnoSelezionato(annoSelezionato + 1)}
+                      disabled={annoSelezionato >= new Date().getFullYear()}
+                      style={{ padding: '8px 12px' }}
+                    >
+                      →
+                    </button>
+                  </div>
+                  <button className="btn btn-primary" onClick={() => setShowModal('upload-fattura')}>
+                    <Upload size={18} /> Carica XML
+                  </button>
+                </div>
               </div>
               
+              {annoSelezionato < new Date().getFullYear() && (
+                <div style={{ 
+                  padding: '8px 16px', 
+                  background: 'var(--accent-orange)', 
+                  color: 'white', 
+                  borderRadius: 8, 
+                  fontSize: '0.85rem',
+                  display: 'inline-block',
+                  marginBottom: 20
+                }}>
+                  📊 Dati storici {annoSelezionato}
+                </div>
+              )}
+              
               <div className="card">
-                {fatture.length > 0 ? (
+                {fatture.filter(f => {
+                  const dataRiferimento = f.dataIncasso || f.data;
+                  return new Date(dataRiferimento).getFullYear() === annoSelezionato;
+                }).length > 0 ? (
                   <table className="table">
                     <thead><tr><th>Numero</th><th>Data Emissione</th><th>Data Incasso</th><th>Cliente</th><th>Importo</th><th></th></tr></thead>
                     <tbody>
-                      {fatture.sort((a, b) => new Date(b.dataIncasso || b.data) - new Date(a.dataIncasso || a.data)).map(f => {
+                      {fatture.filter(f => {
+                        const dataRiferimento = f.dataIncasso || f.data;
+                        return new Date(dataRiferimento).getFullYear() === annoSelezionato;
+                      }).sort((a, b) => new Date(b.dataIncasso || b.data) - new Date(a.dataIncasso || a.data)).map(f => {
                         const dataIncassoDate = new Date(f.dataIncasso || f.data);
                         const dataEmissioneDate = new Date(f.data);
                         const isPagata = dataIncassoDate <= new Date();
