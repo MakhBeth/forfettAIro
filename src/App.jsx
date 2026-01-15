@@ -415,6 +415,7 @@ const LIMITE_FATTURATO = 85000;
 const INPS_GESTIONE_SEPARATA = 0.2607;
 const ALIQUOTA_RIDOTTA = 0.05;
 const ALIQUOTA_STANDARD = 0.15;
+const MAX_HISTORICAL_YEARS = 10;
 
 const COEFFICIENTI_ATECO = {
   '62': 67, '63': 67, '70': 78, '71': 78, '72': 67,
@@ -755,6 +756,7 @@ export default function ForfettarioApp() {
                   <button 
                     className="btn" 
                     onClick={() => setAnnoSelezionato(annoSelezionato - 1)}
+                    disabled={annoSelezionato <= annoCorrente - MAX_HISTORICAL_YEARS + 1}
                     style={{ padding: '8px 12px' }}
                   >
                     ←
@@ -765,15 +767,15 @@ export default function ForfettarioApp() {
                     onChange={(e) => setAnnoSelezionato(parseInt(e.target.value))}
                     style={{ width: 'auto', padding: '8px 12px', fontSize: '1rem', fontWeight: 600 }}
                   >
-                    {Array.from({ length: 10 }, (_, i) => {
-                      const year = new Date().getFullYear() - i;
+                    {Array.from({ length: MAX_HISTORICAL_YEARS }, (_, i) => {
+                      const year = annoCorrente - i;
                       return <option key={year} value={year}>{year}</option>;
                     })}
                   </select>
                   <button 
                     className="btn" 
                     onClick={() => setAnnoSelezionato(annoSelezionato + 1)}
-                    disabled={annoSelezionato >= new Date().getFullYear()}
+                    disabled={annoSelezionato >= annoCorrente}
                     style={{ padding: '8px 12px' }}
                   >
                     →
@@ -781,7 +783,7 @@ export default function ForfettarioApp() {
                 </div>
               </div>
               
-              {annoSelezionato < new Date().getFullYear() && (
+              {annoSelezionato < annoCorrente && (
                 <div style={{ 
                   padding: '12px 16px', 
                   background: 'rgba(251, 191, 36, 0.1)', 
