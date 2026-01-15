@@ -777,6 +777,7 @@ export default function ForfettarioApp() {
                     className="btn" 
                     onClick={() => setAnnoSelezionato(annoSelezionato - 1)}
                     style={{ padding: '8px 12px' }}
+                    aria-label="Anno precedente"
                   >
                     ←
                   </button>
@@ -785,6 +786,7 @@ export default function ForfettarioApp() {
                     value={annoSelezionato} 
                     onChange={(e) => setAnnoSelezionato(parseInt(e.target.value))}
                     style={{ width: 'auto', padding: '8px 12px', fontSize: '1rem', fontWeight: 600 }}
+                    aria-label="Seleziona anno"
                   >
                     {yearOptions.map(year => (
                       <option key={year} value={year}>{year}</option>
@@ -795,6 +797,7 @@ export default function ForfettarioApp() {
                     onClick={() => setAnnoSelezionato(annoSelezionato + 1)}
                     disabled={annoSelezionato >= new Date().getFullYear()}
                     style={{ padding: '8px 12px' }}
+                    aria-label="Anno successivo"
                   >
                     →
                   </button>
@@ -918,6 +921,7 @@ export default function ForfettarioApp() {
                       className="btn btn-secondary" 
                       onClick={() => setAnnoSelezionato(annoSelezionato - 1)}
                       style={{ padding: '8px 12px' }}
+                      aria-label="Anno precedente"
                     >
                       ←
                     </button>
@@ -926,6 +930,7 @@ export default function ForfettarioApp() {
                       value={annoSelezionato} 
                       onChange={(e) => setAnnoSelezionato(parseInt(e.target.value))}
                       style={{ width: 'auto', padding: '8px 12px' }}
+                      aria-label="Seleziona anno"
                     >
                       {yearOptions.map(year => (
                         <option key={year} value={year}>{year}</option>
@@ -936,6 +941,7 @@ export default function ForfettarioApp() {
                       onClick={() => setAnnoSelezionato(annoSelezionato + 1)}
                       disabled={annoSelezionato >= new Date().getFullYear()}
                       style={{ padding: '8px 12px' }}
+                      aria-label="Anno successivo"
                     >
                       →
                     </button>
