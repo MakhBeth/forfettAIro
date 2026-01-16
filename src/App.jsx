@@ -997,27 +997,27 @@ export default function ForfettarioApp() {
                       <table className="table">
                         <thead>
                           <tr>
-                            <th className="sortable" onClick={() => handleSort('numero')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                            <th className="sortable" onClick={() => handleSort('numero')}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                 Numero <SortIcon campo="numero" />
                               </div>
                             </th>
-                            <th className="sortable" onClick={() => handleSort('data')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                            <th className="sortable" onClick={() => handleSort('data')}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                 Data Emissione <SortIcon campo="data" />
                               </div>
                             </th>
-                            <th className="sortable" onClick={() => handleSort('dataIncasso')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                            <th className="sortable" onClick={() => handleSort('dataIncasso')}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                 Data Incasso <SortIcon campo="dataIncasso" />
                               </div>
                             </th>
-                            <th className="sortable" onClick={() => handleSort('clienteNome')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                            <th className="sortable" onClick={() => handleSort('clienteNome')}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                 Cliente <SortIcon campo="clienteNome" />
                               </div>
                             </th>
-                            <th className="sortable" onClick={() => handleSort('importo')} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                            <th className="sortable" onClick={() => handleSort('importo')}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                 Importo <SortIcon campo="importo" />
                               </div>
