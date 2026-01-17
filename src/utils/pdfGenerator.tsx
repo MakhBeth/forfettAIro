@@ -2,6 +2,7 @@
 import { pdf } from '@react-pdf/renderer';
 import { InvoicePDF } from './pdfRenderer';
 import { Invoice, FatturaSettings, Company, Line, Tax } from '../types/Invoice';
+import { translations } from './translations';
 
 // Types from the main app
 interface Fattura {
@@ -33,8 +34,11 @@ interface Config {
 export function convertFatturaToInvoice(
   fattura: Fattura,
   cliente: Cliente,
-  config: Config
+  config: Config,
+  locale: 'it' | 'de' = 'it'
 ): Invoice {
+  const t = translations[locale];
+  
   // Invoicer (fornitore - the user)
   const invoicer: Company = {
     name: config.nomeAttivita || 'Attività',
@@ -81,7 +85,7 @@ export function convertFatturaToInvoice(
     totalBeforeVat: fattura.importo,
     totalVat: 0,
     totalAmount: fattura.importo,
-    notes: 'Operazione effettuata ai sensi dell\'articolo 1, commi da 54 a 89, della Legge n. 190/2014 - Regime forfettario - Operazione senza applicazione dell\'IVA ai sensi dell\'art. 1, comma 58, Legge n. 190/2014'
+    notes: t.forfettarioNote
   };
 
   return invoice;
@@ -96,9 +100,11 @@ export async function generateInvoicePDF(
   config: Config,
   settings: FatturaSettings
 ): Promise<void> {
+  const t = translations[settings.defaultLocale];
+  
   try {
     // Convert fattura to invoice format
-    const invoice = convertFatturaToInvoice(fattura, cliente, config);
+    const invoice = convertFatturaToInvoice(fattura, cliente, config, settings.defaultLocale);
 
     // Generate PDF
     const blob = await pdf(<InvoicePDF invoice={invoice} settings={settings} />).toBlob();
@@ -121,6 +127,6 @@ export async function generateInvoicePDF(
     URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Error generating PDF:', error);
-    throw new Error('Errore generazione PDF: ' + (error?.message || 'errore sconosciuto'));
+    throw new Error((settings.defaultLocale === 'it' ? 'Errore generazione PDF: ' : 'PDF-Generierungsfehler: ') + (error?.message || (settings.defaultLocale === 'it' ? 'errore sconosciuto' : 'unbekannter Fehler')));
   }
 }

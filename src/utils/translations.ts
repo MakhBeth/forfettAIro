@@ -20,6 +20,7 @@ export interface Translations {
   totalAmount: string;
   stampDuty: string;
   digitalInvoiceGeneratedBy: string;
+  forfettarioNote: string;
 }
 
 export const translations: Record<'it' | 'de', Translations> = {
@@ -43,7 +44,8 @@ export const translations: Record<'it' | 'de', Translations> = {
     dueDate: 'Scadenza',
     totalAmount: 'Importo',
     stampDuty: 'Imposta di bollo',
-    digitalInvoiceGeneratedBy: 'Fattura digitale generata da'
+    digitalInvoiceGeneratedBy: 'Fattura digitale generata da',
+    forfettarioNote: 'Operazione effettuata ai sensi dell\'articolo 1, commi da 54 a 89, della Legge n. 190/2014 - Regime forfettario - Operazione senza applicazione dell\'IVA ai sensi dell\'art. 1, comma 58, Legge n. 190/2014'
   },
   de: {
     invoicerData: 'Lieferantendaten',
@@ -65,6 +67,7 @@ export const translations: Record<'it' | 'de', Translations> = {
     dueDate: 'Fälligkeit',
     totalAmount: 'Betrag',
     stampDuty: 'Stempelsteuer',
-    digitalInvoiceGeneratedBy: 'Digitale Rechnung erstellt von'
+    digitalInvoiceGeneratedBy: 'Digitale Rechnung erstellt von',
+    forfettarioNote: 'Transaktion gemäß Artikel 1, Absätze 54 bis 89, des Gesetzes Nr. 190/2014 durchgeführt - Pauschalregelung - Transaktion ohne Anwendung der MwSt. gemäß Art. 1, Absatz 58, Gesetz Nr. 190/2014'
   }
 };
