@@ -21,7 +21,7 @@ import type { Cliente, Fattura, ImportSummary, WorkLog } from '../types';
 import '../styles/theme.css';
 
 function ForfettarioAppInner() {
-  const { toast, exportData, importData, clienti, fatture, showToast, addCliente, addFattura, setClienti, setFatture } = useApp();
+  const { toast, exportData, importData, clienti, fatture, showToast, addCliente, addFattura, addWorkLog, updateCliente, updateFattura } = useApp();
 
   const [currentPage, setCurrentPage] = useState<string>('dashboard');
   const [showModal, setShowModal] = useState<string | null>(null);
@@ -70,25 +70,35 @@ function ForfettarioAppInner() {
   const handleBatchUpload = async (files: FileList) => {
     if (!files || files.length === 0) return;
 
-    const xmlFiles: Array<{ name: string; content: string }> = [];
-    for (let i = 0; i < files.length; i++) {
-      const content = await files[i].text();
-      xmlFiles.push({ name: files[i].name, content });
+    try {
+      const xmlFiles: Array<{ name: string; content: string }> = [];
+      for (let i = 0; i < files.length; i++) {
+        const content = await files[i].text();
+        xmlFiles.push({ name: files[i].name, content });
+      }
+
+      const { summary, newFatture, newClienti } = await processBatchXmlFiles(
+        xmlFiles,
+        fatture,
+        clienti,
+        parseFatturaXML,
+        null
+      );
+
+      // Save new clienti and fatture to DB using context methods
+      for (const cliente of newClienti) {
+        await addCliente(cliente);
+      }
+      for (const fattura of newFatture) {
+        await addFattura(fattura);
+      }
+
+      setShowModal('import-summary');
+      setImportSummary(summary);
+    } catch (error: any) {
+      console.error('Batch upload error:', error);
+      showToast('Errore import batch: ' + (error?.message || 'errore sconosciuto'), 'error');
     }
-
-    const { summary, newFatture, newClienti } = await processBatchXmlFiles(
-      xmlFiles,
-      fatture,
-      clienti,
-      parseFatturaXML,
-      null as any
-    );
-
-    if (newClienti.length > 0) setClienti([...clienti, ...newClienti]);
-    if (newFatture.length > 0) setFatture([...fatture, ...newFatture]);
-
-    setShowModal('import-summary');
-    setImportSummary(summary);
   };
 
   const handleZipUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,11 +117,16 @@ function ForfettarioAppInner() {
         fatture,
         clienti,
         parseFatturaXML,
-        null as any
+        null
       );
 
-      if (newClienti.length > 0) setClienti([...clienti, ...newClienti]);
-      if (newFatture.length > 0) setFatture([...fatture, ...newFatture]);
+      // Save new clienti and fatture to DB using context methods
+      for (const cliente of newClienti) {
+        await addCliente(cliente);
+      }
+      for (const fattura of newFatture) {
+        await addFattura(fattura);
+      }
 
       setShowModal('import-summary');
       setImportSummary(summary);
@@ -241,7 +256,21 @@ function ForfettarioAppInner() {
           onClose={() => setShowModal(null)}
           newCliente={newCliente}
           setNewCliente={setNewCliente}
-          onAdd={() => setNewCliente({ nome: '', piva: '', email: '' })}
+          onAdd={async () => {
+            if (!newCliente.nome) return;
+
+            const cliente: Cliente = {
+              id: Date.now().toString(),
+              nome: newCliente.nome,
+              piva: newCliente.piva || '',
+              email: newCliente.email || ''
+            };
+
+            await addCliente(cliente);
+            setNewCliente({ nome: '', piva: '', email: '' });
+            setShowModal(null);
+            showToast('Cliente aggiunto!');
+          }}
         />
 
         <EditClienteModal
@@ -249,7 +278,14 @@ function ForfettarioAppInner() {
           onClose={() => setShowModal(null)}
           cliente={editingCliente}
           setCliente={setEditingCliente}
-          onUpdate={() => setShowModal(null)}
+          onUpdate={async () => {
+            if (!editingCliente) return;
+
+            await updateCliente(editingCliente);
+            setEditingCliente(null);
+            setShowModal(null);
+            showToast('Cliente aggiornato!');
+          }}
         />
 
         <AddWorkLogModal
@@ -259,9 +295,22 @@ function ForfettarioAppInner() {
           newWorkLog={newWorkLog}
           setNewWorkLog={setNewWorkLog}
           clienti={clienti}
-          onAdd={() => {
+          onAdd={async () => {
+            if (!selectedDate || !newWorkLog.clienteId || newWorkLog.quantita === undefined) return;
+
+            const workLog = {
+              id: Date.now().toString(),
+              clienteId: newWorkLog.clienteId,
+              data: selectedDate,
+              tipo: newWorkLog.tipo || 'ore',
+              quantita: newWorkLog.quantita,
+              note: newWorkLog.note || ''
+            };
+
+            await addWorkLog(workLog);
             setNewWorkLog({ clienteId: '', quantita: undefined, tipo: 'ore', note: '' });
             setShowModal(null);
+            showToast('Lavoro registrato!');
           }}
         />
 
@@ -276,7 +325,14 @@ function ForfettarioAppInner() {
           onClose={() => setShowModal(null)}
           fattura={editingFattura}
           setFattura={setEditingFattura}
-          onUpdate={() => setShowModal(null)}
+          onUpdate={async () => {
+            if (!editingFattura) return;
+
+            await updateFattura(editingFattura);
+            setEditingFattura(null);
+            setShowModal(null);
+            showToast('Data incasso aggiornata!');
+          }}
         />
 
         {toast && <Toast toast={toast} />}

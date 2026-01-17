@@ -26,12 +26,13 @@ export const getDuplicateKey = (fattura: Fattura): string => {
 };
 
 // Shared function to process batch import
+// dbManager is optional - if null, DB save is skipped (caller handles persistence)
 export const processBatchXmlFiles = async (
   xmlFiles: Array<{ name: string; content: string }>,
   existingFatture: Fattura[],
   existingClienti: Cliente[],
   parseFatturaXML: (xmlContent: string) => any,
-  dbManager: IndexedDBManager
+  dbManager?: IndexedDBManager | null
 ): Promise<{
   summary: ImportSummary;
   newFatture: Fattura[];
@@ -128,10 +129,13 @@ export const processBatchXmlFiles = async (
   }
 
   // Save all new clienti and fatture in parallel for better performance
-  await Promise.all([
-    ...newClienti.map(cliente => dbManager.put('clienti', cliente)),
-    ...newFatture.map(fattura => dbManager.put('fatture', fattura))
-  ]);
+  // Only if dbManager is provided (otherwise caller handles persistence)
+  if (dbManager) {
+    await Promise.all([
+      ...newClienti.map(cliente => dbManager.put('clienti', cliente)),
+      ...newFatture.map(fattura => dbManager.put('fatture', fattura))
+    ]);
+  }
 
   return { summary, newFatture, newClienti };
 };
