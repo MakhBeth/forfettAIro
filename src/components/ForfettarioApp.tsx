@@ -944,7 +944,13 @@ export default function ForfettarioApp(): JSX.Element {
     
     const reader = new FileReader();
     reader.onload = async (event) => {
-      const xmlContent = event.target.result;
+      const result = event.target.result;
+      if (typeof result !== 'string') {
+        showToast('Errore lettura file', 'error');
+        return;
+      }
+      
+      const xmlContent = result;
       const parsed = parseFatturaXML(xmlContent);
       if (parsed) {
         let clienteId = clienti.find(c => c.piva === parsed.clientePiva)?.id;

@@ -195,7 +195,13 @@ const GeneratePDF: React.FC<GeneratePDFProps> = ({ invoice, options }) => {
     if (!dateStr) return '-';
     try {
       const date = new Date(dateStr);
-      return date.toLocaleDateString(options.locale === 'en' ? 'en-US' : options.locale === 'de' ? 'de-DE' : options.locale === 'es' ? 'es-ES' : 'it-IT');
+      const localeMap = {
+        'en': 'en-US',
+        'de': 'de-DE',
+        'es': 'es-ES',
+        'it': 'it-IT'
+      };
+      return date.toLocaleDateString(localeMap[options.locale]);
     } catch {
       return dateStr;
     }
