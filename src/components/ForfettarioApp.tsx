@@ -854,7 +854,7 @@ export default function ForfettarioApp(): JSX.Element {
         
         if (!clienteId && parsed.clienteNome) {
           const nuovoCliente = { 
-            id: `${Date.now()}-${i}`, 
+            id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}-${i}`, 
             nome: parsed.clienteNome, 
             piva: parsed.clientePiva, 
             email: '' 
@@ -864,7 +864,7 @@ export default function ForfettarioApp(): JSX.Element {
         }
         
         const nuovaFattura: Fattura = { 
-          id: `${Date.now()}-${i}`, 
+          id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}-${i}`, 
           numero: parsed.numero, 
           importo: parsed.importo, 
           data: parsed.data, 
@@ -904,8 +904,8 @@ export default function ForfettarioApp(): JSX.Element {
   };
   
   // ZIP import handler
-  const handleZipUpload = async (e) => {
-    const file = e.target.files[0];
+  const handleZipUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     
     try {
@@ -957,7 +957,7 @@ export default function ForfettarioApp(): JSX.Element {
           
           if (!clienteId && parsed.clienteNome) {
             const nuovoCliente = { 
-              id: `${Date.now()}-${i}`, 
+              id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}-${i}`, 
               nome: parsed.clienteNome, 
               piva: parsed.clientePiva, 
               email: '' 
@@ -967,7 +967,7 @@ export default function ForfettarioApp(): JSX.Element {
           }
           
           const nuovaFattura: Fattura = { 
-            id: `${Date.now()}-${i}`, 
+            id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}-${i}`, 
             numero: parsed.numero, 
             importo: parsed.importo, 
             data: parsed.data, 
@@ -1007,6 +1007,9 @@ export default function ForfettarioApp(): JSX.Element {
     } catch (error) {
       showToast(error.message || 'Errore caricamento ZIP', 'error');
     }
+    
+    // Clear input to allow re-uploading same file
+    e.target.value = '';
   };
   
   const addCliente = async () => {
@@ -1848,6 +1851,7 @@ export default function ForfettarioApp(): JSX.Element {
                   onChange={(e) => {
                     if (e.target.files && e.target.files.length > 0) {
                       handleBatchFatturaUpload(e.target.files);
+                      e.target.value = ''; // Clear input to allow re-upload
                     }
                   }} 
                   style={{ display: 'none' }} 
