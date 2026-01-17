@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Settings, FileText, LayoutDashboard, Calendar, Upload, Plus, Trash2, Users, Clock, ChevronLeft, ChevronRight, X, Check, AlertTriangle, Download, Database, Edit, Github, FileArchive } from 'lucide-react';
 import { unzipSync } from 'fflate';
+import FatturaDiCortesia from './FatturaDiCortesia';
 
 // Type definitions
-type StoreName = 'config' | 'clienti' | 'fatture' | 'workLogs';
+type StoreName = 'config' | 'clienti' | 'fatture' | 'workLogs' | 'fatturaSettings';
 
 interface Cliente {
   id: string;
@@ -59,8 +60,8 @@ interface Toast {
 // IndexedDB Manager
 // ============================================
 const DB_NAME = 'ForfettarioDB';
-const DB_VERSION = 1;
-const STORES: StoreName[] = ['config', 'clienti', 'fatture', 'workLogs'];
+const DB_VERSION = 2;
+const STORES: StoreName[] = ['config', 'clienti', 'fatture', 'workLogs', 'fatturaSettings'];
 
 class IndexedDBManager {
   db: IDBDatabase | null;
@@ -92,6 +93,9 @@ class IndexedDBManager {
         }
         if (!db.objectStoreNames.contains('workLogs')) {
           db.createObjectStore('workLogs', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('fatturaSettings')) {
+          db.createObjectStore('fatturaSettings', { keyPath: 'id' });
         }
       };
     });
@@ -1206,6 +1210,9 @@ export default function ForfettarioApp(): JSX.Element {
             <div className={`nav-item ${currentPage === 'fatture' ? 'active' : ''}`} onClick={() => setCurrentPage('fatture')}>
               <FileText size={20} /> Fatture
             </div>
+            <div className={`nav-item ${currentPage === 'fattura-cortesia' ? 'active' : ''}`} onClick={() => setCurrentPage('fattura-cortesia')}>
+              <FileArchive size={20} /> Fattura di Cortesia
+            </div>
             <div className={`nav-item ${currentPage === 'calendario' ? 'active' : ''}`} onClick={() => setCurrentPage('calendario')}>
               <Calendar size={20} /> Calendario
             </div>
@@ -1689,6 +1696,11 @@ export default function ForfettarioApp(): JSX.Element {
                 </div>
               )}
             </>
+          )}
+          
+          {/* FATTURA DI CORTESIA */}
+          {currentPage === 'fattura-cortesia' && (
+            <FatturaDiCortesia dbManager={dbManager} showToast={showToast} />
           )}
           
           {/* IMPOSTAZIONI */}

@@ -1,4 +1,5 @@
 import { pdf } from '@react-pdf/renderer';
+import React from 'react';
 import GeneratePDF from './renderer';
 import dataExtractor from './dataExtractor';
 import { xmlToJson } from './xmlParser';
@@ -31,9 +32,9 @@ export async function generatePDFFromXML(
       }
     };
     
-    // Generate PDF
-    const pdfDocument = <GeneratePDF invoice={invoice} options={options} />;
-    const blob = await pdf(pdfDocument).toBlob();
+    // Generate PDF using React.createElement to avoid JSX
+    const element = React.createElement(GeneratePDF, { invoice, options });
+    const blob = await pdf(element as any).toBlob();
     
     return blob;
   } catch (error) {

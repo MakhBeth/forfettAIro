@@ -26,9 +26,9 @@ const extractAddress = (sede: any): Address | undefined => {
 const extractParty = (party: any): Party | undefined => {
   if (!party || !party.length) return undefined;
   const p = party[0];
-  const anagrafica = getFirst(p.DatiAnagrafici);
-  const anag = anagrafica ? getFirst(anagrafica.Anagrafica) : undefined;
-  const idFiscale = anagrafica ? getFirst(anagrafica.IdFiscaleIVA) : undefined;
+  const anagrafica: any = getFirst(p.DatiAnagrafici);
+  const anag: any = anagrafica ? getFirst(anagrafica.Anagrafica) : undefined;
+  const idFiscale: any = anagrafica ? getFirst(anagrafica.IdFiscaleIVA) : undefined;
   
   let name = '';
   if (anag) {
@@ -50,7 +50,7 @@ const extractParty = (party: any): Party | undefined => {
   return {
     name: name || undefined,
     vatNumber: vatNumber || undefined,
-    taxCode: anagrafica ? getText(anagrafica.CodiceFiscale) : undefined,
+    taxCode: anagrafica ? getText((anagrafica as any).CodiceFiscale) : undefined,
     address: extractAddress(p.Sede)
   };
 };
