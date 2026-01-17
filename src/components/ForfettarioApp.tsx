@@ -577,7 +577,7 @@ export default function ForfettarioApp(): JSX.Element {
   const [editingFattura, setEditingFattura] = useState<Fattura | null>(null);
   const [filtroAnnoFatture, setFiltroAnnoFatture] = useState<string>('tutte');
   const [ordinamentoFatture, setOrdinamentoFatture] = useState<{ campo: string; direzione: string }>({ campo: 'dataIncasso', direzione: 'desc' });
-  const [pendingImport, setPendingImport] = useState<{ data: any; fileDate: string | null } | null>(null);
+  const [pendingImport, setPendingImport] = useState<{ data: Record<string, any[]>; fileDate: string | null } | null>(null);
   
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -1634,7 +1634,7 @@ export default function ForfettarioApp(): JSX.Element {
               
               <div style={{ padding: 16, background: 'var(--bg-secondary)', borderRadius: 12, marginBottom: 20 }}>
                 <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 4 }}>📁 Data backup file</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 4 }}>📁 Data del backup</div>
                   <div style={{ fontWeight: 500 }}>
                     {pendingImport.fileDate 
                       ? new Date(pendingImport.fileDate).toLocaleString('it-IT', { 
