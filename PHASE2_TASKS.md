@@ -1,9 +1,19 @@
 # Phase 2: Fattura di Cortesia Implementation Tasks
 
-**Status**: Phase 1 (Refactoring) Complete ✅
-**Next**: Phase 2 (Add courtesy invoice PDF generation feature)
+**Status**: Phase 2 In Progress
+**Next**: Task 3 (PDF Generation Library)
 **Date**: 2026-01-18
-**Commit**: e367083
+**Last Commit**: e367083
+
+### Progress
+- [ ] Task 1: Install Dependencies
+- [x] Task 2: Extend Data Model ✅
+- [ ] Task 3: Create PDF Generation Library
+- [ ] Task 4: Add Settings UI
+- [ ] Task 5: Create Courtesy Invoice Modal
+- [ ] Task 6: Create Manage Services Modal
+- [ ] Task 7: Integrate into Fatture Page
+- [ ] Task 8: Testing
 
 ---
 
@@ -109,8 +119,8 @@ npm install --save-dev @types/file-saver
 
 ---
 
-### Task 2: Extend Data Model
-**Estimated effort**: 15 minutes
+### Task 2: Extend Data Model ✅ COMPLETE
+**Status**: Done (2026-01-18)
 
 **File**: `src/types/index.ts`
 

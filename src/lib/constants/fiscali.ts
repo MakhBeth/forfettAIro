@@ -29,5 +29,15 @@ export const DEFAULT_CONFIG: Config = {
   annoApertura: new Date().getFullYear(),
   codiciAteco: [],
   nomeAttivita: '',
-  aliquotaOverride: null
+  aliquotaOverride: null,
+  courtesyInvoice: {
+    primaryColor: '#6699cc',
+    textColor: '#033243',
+    companyName: '',
+    vatNumber: '',
+    country: 'IT',
+    defaultServices: [],
+    includeFooter: true,
+    locale: 'it'
+  }
 };

@@ -43,6 +43,7 @@ export interface Config {
   partitaIva?: string;
   annoApertura: number;
   codiciAteco: string[];
+  courtesyInvoice?: CourtesyInvoiceConfig;
 }
 
 export interface Toast {
@@ -56,4 +57,63 @@ export interface ImportSummary {
   duplicates: number;
   failed: number;
   failedFiles: Array<{ filename: string; error: string }>;
+}
+
+// Courtesy Invoice Types
+export interface ServiceTemplate {
+  id: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate: number;
+}
+
+export interface CourtesyInvoiceConfig {
+  // Branding
+  logoBase64?: string;
+  logoMimeType?: string;
+  primaryColor: string;
+  textColor: string;
+
+  // Company info
+  companyName: string;
+  vatNumber: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  country?: string;
+  phone?: string;
+  email?: string;
+  iban?: string;
+  bankName?: string;
+
+  // Service templates
+  defaultServices: ServiceTemplate[];
+
+  // Settings
+  includeFooter: boolean;
+  locale: string;
+}
+
+export interface CourtesyInvoiceLine {
+  id: string;
+  number: number;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  taxRate: number;
+}
+
+export interface CourtesyInvoiceDraft {
+  number: string;
+  issueDate: Date;
+  dueDate?: Date;
+  clientId?: string;
+  clientName: string;
+  clientVat?: string;
+  clientAddress?: string;
+  description?: string;
+  lines: CourtesyInvoiceLine[];
+  paymentMethod?: string;
 }
