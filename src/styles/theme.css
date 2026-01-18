@@ -577,47 +577,64 @@ select.input-field option {
   content: attr(data-tooltip);
   position: fixed;
   position-anchor: --tooltip-anchor;
-  inset-area: top;
-  margin-bottom: 8px;
-  padding: 8px 12px;
+  inset-area: top center;
+  margin-bottom: 6px;
+  padding: 6px 10px;
   background: var(--bg-card);
   color: var(--text-primary);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.15s ease, visibility 0.15s ease;
   pointer-events: none;
   z-index: 1000;
-  position-try-fallbacks: --tooltip-bottom, --tooltip-left, --tooltip-right;
+  position-try-fallbacks: --tooltip-bottom;
   position-visibility: anchors-visible;
 }
 
 @position-try --tooltip-bottom {
-  inset-area: bottom;
-  margin-top: 8px;
+  inset-area: bottom center;
+  margin-top: 6px;
   margin-bottom: 0;
 }
 
-@position-try --tooltip-left {
-  inset-area: left;
-  margin-right: 8px;
-  margin-bottom: 0;
+@media (hover: hover) {
+  .tooltip:hover::after,
+  .tooltip:focus::after,
+  .tooltip:focus-visible::after {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
-@position-try --tooltip-right {
-  inset-area: right;
-  margin-left: 8px;
-  margin-bottom: 0;
+/* Icon button with label for touch devices */
+.icon-btn-labeled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
-.tooltip:hover::after,
-.tooltip:focus::after,
-.tooltip:focus-visible::after {
-  opacity: 1;
-  visibility: visible;
+.icon-btn-labeled .icon-btn-label {
+  display: none;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (hover: none) {
+  .icon-btn-labeled .icon-btn-label {
+    display: block;
+  }
+
+  .tooltip::after {
+    display: none;
+  }
 }

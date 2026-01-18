@@ -127,36 +127,45 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
               <Upload size={18} aria-hidden="true" /> Carica XML
             </button>
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button
-              className="btn btn-primary tooltip"
-              onClick={() => setShowModal('batch-upload-fattura')}
-              data-tooltip="Batch Import"
-              aria-label="Batch Import"
-              style={{ padding: '10px' }}
-            >
-              <FileText size={18} aria-hidden="true" />
-            </button>
-            <button
-              className="btn btn-primary tooltip"
-              onClick={() => setShowModal('upload-zip')}
-              data-tooltip="Carica ZIP"
-              aria-label="Carica ZIP"
-              style={{ padding: '10px' }}
-            >
-              <FileArchive size={18} aria-hidden="true" />
-            </button>
-            <a
-              href="https://ivaservizi.agenziaentrate.gov.it/portale/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-secondary tooltip"
-              data-tooltip="Portale ADE"
-              aria-label="Portale Agenzia delle Entrate"
-              style={{ textDecoration: 'none', padding: '10px' }}
-            >
-              <Landmark size={18} aria-hidden="true" />
-            </a>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+            <div className="icon-btn-labeled">
+              <button
+                className="btn btn-primary tooltip"
+                onClick={() => setShowModal('batch-upload-fattura')}
+                data-tooltip="Batch Import"
+                aria-label="Batch Import"
+                style={{ padding: '10px' }}
+              >
+                <FileText size={18} aria-hidden="true" />
+              </button>
+              <span className="icon-btn-label">Batch</span>
+            </div>
+            <div className="icon-btn-labeled">
+              <button
+                className="btn btn-primary tooltip"
+                onClick={() => setShowModal('upload-zip')}
+                data-tooltip="Carica ZIP"
+                aria-label="Carica ZIP"
+                style={{ padding: '10px' }}
+              >
+                <FileArchive size={18} aria-hidden="true" />
+              </button>
+              <span className="icon-btn-label">ZIP</span>
+            </div>
+            <div className="icon-btn-labeled">
+              <a
+                href="https://ivaservizi.agenziaentrate.gov.it/portale/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary tooltip"
+                data-tooltip="Portale ADE"
+                aria-label="Portale Agenzia delle Entrate"
+                style={{ textDecoration: 'none', padding: '10px' }}
+              >
+                <Landmark size={18} aria-hidden="true" />
+              </a>
+              <span className="icon-btn-label">ADE</span>
+            </div>
           </div>
         </div>
       </div>
