@@ -577,8 +577,9 @@ select.input-field option {
   content: attr(data-tooltip);
   position: fixed;
   position-anchor: --tooltip-anchor;
-  inset-area: top center;
-  margin-bottom: 6px;
+  top: anchor(top);
+  left: anchor(center);
+  translate: -50% calc(-100% - 8px);
   padding: 6px 10px;
   background: var(--bg-card);
   color: var(--text-primary);
@@ -593,14 +594,6 @@ select.input-field option {
   transition: opacity 0.15s ease, visibility 0.15s ease;
   pointer-events: none;
   z-index: 1000;
-  position-try-fallbacks: --tooltip-bottom;
-  position-visibility: anchors-visible;
-}
-
-@position-try --tooltip-bottom {
-  inset-area: bottom center;
-  margin-top: 6px;
-  margin-bottom: 0;
 }
 
 @media (hover: hover) {
