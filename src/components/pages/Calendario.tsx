@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Trash2, ArrowUpDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, ArrowUpDown, Edit } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { getCalendarDays, formatDate } from '../../lib/utils/dateHelpers';
 import { getClientColor } from '../../lib/utils/colorUtils';
 import { getWorkLogQuantita } from '../../lib/utils/calculations';
-import type { Cliente } from '../../types';
+import type { Cliente, WorkLog } from '../../types';
 
 // Helper to get client color (custom or generated)
 const getClientDisplayColor = (cliente: Cliente | undefined, clientId: string): string => {
@@ -23,17 +23,19 @@ const hexToRgba = (hex: string, alpha: number): string => {
 interface CalendarioProps {
   setShowModal: (modal: string | null) => void;
   setSelectedDate: (date: string) => void;
+  setEditingWorkLog: (workLog: WorkLog) => void;
 }
 
 type RecapSortField = 'cliente' | 'quantita' | 'tariffa' | 'totale';
 type ActivitySortField = 'data' | 'cliente' | 'durata';
 type SortDirection = 'asc' | 'desc';
 
-export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
-  const { clienti, workLogs, removeWorkLog } = useApp();
+export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }: CalendarioProps) {
+  const { clienti, workLogs, removeWorkLog, updateWorkLog } = useApp();
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [recapSort, setRecapSort] = useState<{ field: RecapSortField; direction: SortDirection }>({ field: 'totale', direction: 'desc' });
   const [activitySort, setActivitySort] = useState<{ field: ActivitySortField; direction: SortDirection }>({ field: 'data', direction: 'desc' });
+  const [draggedWorkLog, setDraggedWorkLog] = useState<WorkLog | null>(null);
 
   const toggleRecapSort = (field: RecapSortField) => {
     setRecapSort(prev => ({
@@ -136,25 +138,57 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
             const clientColor = primaryClientId ? getClientDisplayColor(primaryClient, primaryClientId) : null;
 
             return (
-              <button
-                type="button"
+              <div
                 key={i}
-                className={`calendar-day ${day.otherMonth ? 'other-month' : ''} ${dateStr === today ? 'today' : ''} ${isWeekendDay ? 'weekend' : ''} ${hasWork ? 'has-work' : ''}`}
+                className={`calendar-day ${day.otherMonth ? 'other-month' : ''} ${dateStr === today ? 'today' : ''} ${isWeekendDay ? 'weekend' : ''} ${hasWork ? 'has-work' : ''} ${draggedWorkLog ? 'drop-target' : ''}`}
                 style={hasWork && clientColor ? { backgroundColor: hexToRgba(clientColor, 0.1) } : undefined}
                 onClick={() => {
-                  if (!day.otherMonth) {
+                  if (!day.otherMonth && !draggedWorkLog) {
                     setSelectedDate(dateStr);
                     setShowModal('add-work');
                   }
                 }}
-                disabled={day.otherMonth}
+                onDragOver={(e) => {
+                  if (!day.otherMonth) {
+                    e.preventDefault();
+                    e.currentTarget.style.outline = '2px solid var(--accent-primary)';
+                  }
+                }}
+                onDragLeave={(e) => {
+                  e.currentTarget.style.outline = '';
+                }}
+                onDrop={async (e) => {
+                  e.preventDefault();
+                  e.currentTarget.style.outline = '';
+                  if (draggedWorkLog && !day.otherMonth && draggedWorkLog.data !== dateStr) {
+                    await updateWorkLog({ ...draggedWorkLog, data: dateStr });
+                    setDraggedWorkLog(null);
+                  }
+                }}
                 aria-label={`${day.date.getDate()} ${currentMonth.toLocaleString('it-IT', { month: 'long' })}${hasWork ? `, ${previewText}` : ''}`}
                 aria-current={dateStr === today ? 'date' : undefined}
               >
                 {hasWork && clientColor && <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: clientColor, position: 'absolute', top: 6, right: 6 }} aria-hidden="true" />}
                 <div className="calendar-day-number" aria-hidden="true">{day.date.getDate()}</div>
-                {hasWork && primaryClientId && clientColor && <div className="calendar-day-preview" aria-hidden="true" style={{ color: clientColor }}>{previewText}</div>}
-              </button>
+                {hasWork && primaryClientId && clientColor && (
+                  <div
+                    className="calendar-day-preview"
+                    aria-hidden="true"
+                    style={{ color: clientColor, cursor: 'grab' }}
+                    draggable
+                    onDragStart={(e) => {
+                      const mainLog = dayLogs.find(l => l.clienteId === primaryClientId);
+                      if (mainLog) {
+                        setDraggedWorkLog(mainLog);
+                        e.dataTransfer.effectAllowed = 'move';
+                      }
+                    }}
+                    onDragEnd={() => setDraggedWorkLog(null)}
+                  >
+                    {previewText}
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
@@ -280,13 +314,20 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
                   return (
                     <tr key={log.id}>
                       <td>{new Date(log.data + 'T12:00:00').toLocaleDateString('it-IT')}</td>
-                      <td style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: logColor, flexShrink: 0 }} />
-                        {logCliente?.nome || '-'}
+                      <td>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: logColor, flexShrink: 0, display: 'inline-block' }} />
+                          {logCliente?.nome || '-'}
+                        </span>
                       </td>
                       <td><span className="badge badge-green">{log.tipo === 'giornata' ? `${getWorkLogQuantita(log)} giornata` : `${getWorkLogQuantita(log)} ore`}</span></td>
                       <td style={{ color: 'var(--text-secondary)' }}>{log.note || '-'}</td>
-                      <td><button className="btn btn-danger" onClick={() => removeWorkLog(log.id)} aria-label="Elimina attività"><Trash2 size={16} aria-hidden="true" /></button></td>
+                      <td>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button className="btn btn-secondary btn-sm" onClick={() => { setEditingWorkLog(log); setShowModal('edit-work'); }} aria-label="Modifica attività"><Edit size={16} aria-hidden="true" /></button>
+                          <button className="btn btn-danger" onClick={() => removeWorkLog(log.id)} aria-label="Elimina attività"><Trash2 size={16} aria-hidden="true" /></button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}

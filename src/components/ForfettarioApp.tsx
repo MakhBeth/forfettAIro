@@ -13,6 +13,7 @@ import { ImportSummaryModal } from './modals/ImportSummaryModal';
 import { AddClienteModal } from './modals/AddClienteModal';
 import { EditClienteModal } from './modals/EditClienteModal';
 import { AddWorkLogModal } from './modals/AddWorkLogModal';
+import { EditWorkLogModal } from './modals/EditWorkLogModal';
 import { ImportBackupModal } from './modals/ImportBackupModal';
 import { EditDataIncassoModal } from './modals/EditDataIncassoModal';
 import { CourtesyInvoiceModal } from './modals/CourtesyInvoiceModal';
@@ -26,7 +27,7 @@ import type { Cliente, Fattura, ImportSummary, WorkLog } from '../types';
 import '../styles/theme.css';
 
 function ForfettarioAppInner() {
-  const { toast, exportData, importData, clienti, fatture, showToast, addCliente, addFattura, addWorkLog, updateCliente, updateFattura, config, setConfig } = useApp();
+  const { toast, exportData, importData, clienti, fatture, showToast, addCliente, addFattura, addWorkLog, updateCliente, updateFattura, updateWorkLog, config, setConfig } = useApp();
 
   const [currentPage, setCurrentPage] = useState<string>('dashboard');
   const [showModal, setShowModal] = useState<string | null>(null);
@@ -38,6 +39,7 @@ function ForfettarioAppInner() {
   const [editingFattura, setEditingFattura] = useState<Fattura | null>(null);
   const [importSummary, setImportSummary] = useState<ImportSummary | null>(null);
   const [newWorkLog, setNewWorkLog] = useState<Partial<WorkLog>>({ clienteId: '', quantita: undefined, tipo: 'ore', note: '' });
+  const [editingWorkLog, setEditingWorkLog] = useState<WorkLog | null>(null);
 
   // Upload handlers
   const handleFatturaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -258,6 +260,7 @@ function ForfettarioAppInner() {
             <Calendario
               setShowModal={setShowModal}
               setSelectedDate={setSelectedDate}
+              setEditingWorkLog={setEditingWorkLog}
             />
           )}
 
@@ -366,6 +369,22 @@ function ForfettarioAppInner() {
           isOpen={showModal === 'import'}
           onClose={() => setShowModal(null)}
           onImport={handleImport}
+        />
+
+        <EditWorkLogModal
+          isOpen={showModal === 'edit-work'}
+          onClose={() => setShowModal(null)}
+          workLog={editingWorkLog}
+          setWorkLog={setEditingWorkLog}
+          clienti={clienti}
+          onUpdate={async () => {
+            if (!editingWorkLog) return;
+
+            await updateWorkLog(editingWorkLog);
+            setEditingWorkLog(null);
+            setShowModal(null);
+            showToast('Attività aggiornata!');
+          }}
         />
 
         <EditDataIncassoModal

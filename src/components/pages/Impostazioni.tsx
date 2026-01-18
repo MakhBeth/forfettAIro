@@ -4,6 +4,11 @@ import { useApp } from '../../context/AppContext';
 import type { Cliente, EmittenteConfig } from '../../types';
 import { COEFFICIENTI_ATECO } from '../../lib/constants/fiscali';
 import { ThemeSwitch } from '../shared/ThemeSwitch';
+import { getClientColor } from '../../lib/utils/colorUtils';
+
+const getClientDisplayColor = (cliente: Cliente): string => {
+  return cliente.color || getClientColor(cliente.id);
+};
 
 interface ImpostazioniProps {
   setShowModal: (modal: string | null) => void;
@@ -280,7 +285,12 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
             <tbody>
               {clienti.map(c => (
                 <tr key={c.id}>
-                  <td style={{ fontWeight: 500 }}>{c.nome}</td>
+                  <td style={{ fontWeight: 500 }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: getClientDisplayColor(c), flexShrink: 0, display: 'inline-block' }} />
+                      {c.nome}
+                    </span>
+                  </td>
                   <td style={{ fontFamily: 'Space Mono' }}>{c.piva || '-'}</td>
                   <td>{c.email || '-'}</td>
                   <td>{c.rate && c.billingUnit ? `€${c.rate}/${c.billingUnit === 'ore' ? 'h' : 'gg'}` : '-'}</td>
