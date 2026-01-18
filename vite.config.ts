@@ -56,6 +56,12 @@ export default defineConfig({
     })
   ],
   build: {
+    modulePreload: {
+      // Don't preload heavy chunks - they'll be loaded on demand
+      resolveDependencies: (filename, deps) => {
+        return deps.filter(dep => !dep.includes('vendor-pdf') && !dep.includes('vendor-zip'));
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
