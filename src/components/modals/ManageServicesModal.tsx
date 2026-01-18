@@ -77,6 +77,8 @@ export function ManageServicesModal({ isOpen, onClose }: ManageServicesModalProp
     if (e.target === dialogRef.current) onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="manage-services-title" style={{ maxWidth: 700 }}>
         <div className="modal-header">

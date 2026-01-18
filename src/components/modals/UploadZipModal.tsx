@@ -37,6 +37,8 @@ export function UploadZipModal({ isOpen, onClose, onUpload }: UploadZipModalProp
     if (e.target === dialogRef.current) onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="upload-zip-title">
         <div className="modal-header">

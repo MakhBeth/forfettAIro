@@ -27,7 +27,7 @@ export function EditClienteModal({ isOpen, onClose, cliente, setCliente, onUpdat
     if (e.target === dialogRef.current) onClose();
   };
 
-  if (!cliente) return null;
+  if (!isOpen || !cliente) return null;
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="edit-cliente-title">

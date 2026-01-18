@@ -27,7 +27,7 @@ export function EditDataIncassoModal({ isOpen, onClose, fattura, setFattura, onU
     if (e.target === dialogRef.current) onClose();
   };
 
-  if (!fattura) return null;
+  if (!isOpen || !fattura) return null;
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="edit-incasso-title">

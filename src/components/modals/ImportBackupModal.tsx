@@ -24,6 +24,8 @@ export function ImportBackupModal({ isOpen, onClose, onImport }: ImportBackupMod
     if (e.target === dialogRef.current) onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="import-backup-title">
         <div className="modal-header">

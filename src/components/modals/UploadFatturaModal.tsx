@@ -24,6 +24,8 @@ export function UploadFatturaModal({ isOpen, onClose, onUpload }: UploadFatturaM
     if (e.target === dialogRef.current) onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="upload-fattura-title">
         <div className="modal-header">

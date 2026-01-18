@@ -293,6 +293,8 @@ export function NuovaFatturaModal({ isOpen, onClose }: NuovaFatturaModalProps) {
     if (e.target === dialogRef.current) handleClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <dialog
       ref={dialogRef}

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { X, Check, Clock } from 'lucide-react';
 import type { WorkLog, Cliente } from '../../types';
 
@@ -11,6 +12,22 @@ interface EditWorkLogModalProps {
 }
 
 export function EditWorkLogModal({ isOpen, onClose, workLog, setWorkLog, clienti, onUpdate }: EditWorkLogModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isOpen && !dialog.open) {
+      dialog.showModal();
+    } else if (!isOpen && dialog.open) {
+      dialog.close();
+    }
+  }, [isOpen]);
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    if (e.target === dialogRef.current) onClose();
+  };
+
   if (!isOpen || !workLog) return null;
 
   const selectedCliente = clienti.find(c => c.id === workLog.clienteId);
@@ -18,8 +35,7 @@ export function EditWorkLogModal({ isOpen, onClose, workLog, setWorkLog, clienti
   const isHourly = billingUnit === 'ore';
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="edit-worklog-title" onClick={e => e.stopPropagation()}>
+    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="edit-worklog-title">
         <div className="modal-header">
           <h3 id="edit-worklog-title" className="modal-title">Modifica Attività</h3>
           <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>
@@ -71,7 +87,6 @@ export function EditWorkLogModal({ isOpen, onClose, workLog, setWorkLog, clienti
           <input type="text" className="input-field" value={workLog.note || ''} onChange={(e) => setWorkLog({ ...workLog, note: e.target.value })} />
         </div>
         <button className="btn btn-primary" style={{ width: '100%' }} onClick={onUpdate} disabled={!workLog.clienteId || workLog.quantita === undefined}><Check size={18} /> Salva</button>
-      </div>
-    </div>
+    </dialog>
   );
 }

@@ -27,6 +27,8 @@ export function AddClienteModal({ isOpen, onClose, newCliente, setNewCliente, on
     if (e.target === dialogRef.current) onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="add-cliente-title">
         <div className="modal-header">

@@ -25,7 +25,7 @@ export function ImportSummaryModal({ isOpen, onClose, summary }: ImportSummaryMo
     if (e.target === dialogRef.current) onClose();
   };
 
-  if (!summary) return null;
+  if (!isOpen || !summary) return null;
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="import-summary-title">
