@@ -26,21 +26,41 @@
   overflow: visible;
 }
 
-:root {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
+/* Dark Theme (default) */
+:root,
+html[data-theme="dark"] {
+  --bg-primary: #0d0d12;
+  --bg-secondary: #13131a;
   --bg-card: #1a1a24;
   --bg-hover: #22222e;
-  --accent-primary: #6366f1;
-  --accent-secondary: #818cf8;
+  --accent-primary: #5E6AD2;
+  --accent-secondary: #6E7AE2;
   --accent-green: #10b981;
   --accent-orange: #f59e0b;
   --accent-red: #ef4444;
   --text-primary: #f8fafc;
-  --text-secondary: #b8c5d6;
-  --text-muted: #8896a8;
-  --border: #2a2a3a;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --border: rgba(255, 255, 255, 0.08);
 }
+
+/* Light Theme */
+html[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card: #f1f3f5;
+  --bg-hover: #e9ecef;
+  --accent-primary: #5E6AD2;
+  --accent-secondary: #4B55B8;
+  --accent-green: #059669;
+  --accent-orange: #d97706;
+  --accent-red: #dc2626;
+  --text-primary: #1a1a2e;
+  --text-secondary: #52525b;
+  --text-muted: #a1a1aa;
+  --border: rgba(0, 0, 0, 0.08);
+}
+
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -490,4 +510,56 @@ select.input-field option {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Theme Switch Component */
+.theme-switch {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.theme-switch-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-switch-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.theme-switch-btn.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.theme-switch-btn:focus-visible {
+  outline: 2px solid var(--accent-secondary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .theme-switch {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .theme-switch-btn {
+    justify-content: center;
+  }
 }

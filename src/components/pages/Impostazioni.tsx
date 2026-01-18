@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Download, Upload, Database, Plus, X, Edit, Trash2, Users } from 'lucide-react';
+import { Download, Upload, Database, Plus, X, Edit, Trash2, Users, Palette } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import type { Cliente } from '../../types';
 import { COEFFICIENTI_ATECO } from '../../lib/constants/fiscali';
+import { ThemeSwitch } from '../shared/ThemeSwitch';
 
 interface ImpostazioniProps {
   setShowModal: (modal: string | null) => void;
@@ -47,6 +48,12 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
           <h2>ℹ️ Info backup</h2>
           <p>I dati sono in IndexedDB (locale). Esporta regolarmente per sicurezza. Il JSON contiene: config, clienti, fatture e ore.</p>
         </div>
+      </div>
+
+      <div className="card">
+        <h2 className="card-title"><Palette size={16} aria-hidden="true" style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />Aspetto</h2>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: 16, fontSize: '0.9rem' }}>Scegli il tema dell'applicazione</p>
+        <ThemeSwitch />
       </div>
 
       <div className="grid-2">
