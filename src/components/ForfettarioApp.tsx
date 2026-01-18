@@ -21,11 +21,12 @@ import { NuovaFatturaModal } from './modals/NuovaFatturaModal';
 import { Toast } from './shared/Toast';
 import { parseFatturaXML, extractXmlFromZip } from '../lib/utils/xmlParsing';
 import { processBatchXmlFiles } from '../lib/utils/batchImport';
+import { extractEmittenteFromXml, autoPopulateConfig } from '../lib/utils/configAutoPopulate';
 import type { Cliente, Fattura, ImportSummary, WorkLog } from '../types';
 import '../styles/theme.css';
 
 function ForfettarioAppInner() {
-  const { toast, exportData, importData, clienti, fatture, showToast, addCliente, addFattura, addWorkLog, updateCliente, updateFattura } = useApp();
+  const { toast, exportData, importData, clienti, fatture, showToast, addCliente, addFattura, addWorkLog, updateCliente, updateFattura, config, setConfig } = useApp();
 
   const [currentPage, setCurrentPage] = useState<string>('dashboard');
   const [showModal, setShowModal] = useState<string | null>(null);
@@ -64,6 +65,19 @@ function ForfettarioAppInner() {
         duplicateKey: `${parsed.numero}-${parsed.data}-${parsed.importo}`
       };
       await addFattura(nuovaFattura);
+
+      // Auto-popola impostazioni vuote con dati emittente dalla fattura
+      const extractedData = extractEmittenteFromXml(text);
+      if (extractedData) {
+        const configUpdates = autoPopulateConfig(extractedData, config);
+        if (configUpdates) {
+          setConfig({ ...config, ...configUpdates });
+          showToast('Fattura caricata! Impostazioni aggiornate automaticamente.');
+          setShowModal(null);
+          return;
+        }
+      }
+
       setShowModal(null);
       showToast('Fattura caricata!');
     } else {
@@ -95,6 +109,17 @@ function ForfettarioAppInner() {
       }
       for (const fattura of newFatture) {
         await addFattura(fattura);
+      }
+
+      // Auto-popola impostazioni vuote con dati emittente dalla prima fattura
+      if (xmlFiles.length > 0) {
+        const extractedData = extractEmittenteFromXml(xmlFiles[0].content);
+        if (extractedData) {
+          const configUpdates = autoPopulateConfig(extractedData, config);
+          if (configUpdates) {
+            setConfig({ ...config, ...configUpdates });
+          }
+        }
       }
 
       setShowModal('import-summary');
@@ -130,6 +155,17 @@ function ForfettarioAppInner() {
       }
       for (const fattura of newFatture) {
         await addFattura(fattura);
+      }
+
+      // Auto-popola impostazioni vuote con dati emittente dalla prima fattura
+      if (xmlFiles.length > 0) {
+        const extractedData = extractEmittenteFromXml(xmlFiles[0].content);
+        if (extractedData) {
+          const configUpdates = autoPopulateConfig(extractedData, config);
+          if (configUpdates) {
+            setConfig({ ...config, ...configUpdates });
+          }
+        }
       }
 
       setShowModal('import-summary');
