@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Download, Upload, Database, Plus, X, Edit, Trash2, Users, Palette } from 'lucide-react';
+import { Download, Upload, Database, Plus, X, Edit, Trash2, Users, Palette, Building } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import type { Cliente } from '../../types';
+import type { Cliente, EmittenteConfig } from '../../types';
 import { COEFFICIENTI_ATECO } from '../../lib/constants/fiscali';
 import { ThemeSwitch } from '../shared/ThemeSwitch';
 
@@ -50,32 +50,39 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
         </div>
       </div>
 
+      {/* Dati P.IVA */}
       <div className="card">
-        <h2 className="card-title"><Palette size={16} aria-hidden="true" style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />Aspetto</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: 16, fontSize: '0.9rem' }}>Scegli il tema dell'applicazione</p>
-        <ThemeSwitch />
-      </div>
+        <h2 className="card-title"><Building size={16} aria-hidden="true" style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />Dati P.IVA</h2>
 
-      <div className="grid-2">
-        <div className="card">
-          <h2 className="card-title">Dati P.IVA</h2>
-          <div className="input-group">
-            <label className="input-label" htmlFor="nome-attivita">Nome Attività</label>
-            <input type="text" id="nome-attivita" className="input-field" value={config.nomeAttivita} onChange={(e) => setConfig({ ...config, nomeAttivita: e.target.value })} placeholder="Es: Mario Rossi - Consulente" autoComplete="organization" />
-          </div>
+        <div className="grid-2">
           <div className="input-group">
             <label className="input-label" htmlFor="partita-iva">Partita IVA</label>
-            <input type="text" id="partita-iva" className="input-field" value={config.partitaIva} onChange={(e) => setConfig({ ...config, partitaIva: e.target.value })} placeholder="12345678901" maxLength={11} autoComplete="off" />
+            <input type="text" id="partita-iva" className="input-field" value={config.partitaIva} onChange={(e) => setConfig({ ...config, partitaIva: e.target.value })} placeholder="12345678901" maxLength={11} style={{ fontFamily: 'Space Mono' }} />
           </div>
           <div className="input-group">
+            <label className="input-label" htmlFor="iban">IBAN</label>
+            <input
+              type="text"
+              id="iban"
+              className="input-field"
+              value={config.iban || ''}
+              onChange={(e) => setConfig({ ...config, iban: e.target.value.replace(/\s/g, '').toUpperCase() })}
+              placeholder="IT60X0542811101000000123456"
+              style={{ fontFamily: 'Space Mono' }}
+            />
+          </div>
+        </div>
+
+        <div className="grid-2">
+          <div className="input-group">
             <label className="input-label" htmlFor="anno-apertura">Anno Apertura</label>
-            <input type="number" id="anno-apertura" className="input-field" value={config.annoApertura} onChange={(e) => setConfig({ ...config, annoApertura: parseInt(e.target.value) })} min={2000} max={annoCorrente} aria-describedby="anno-apertura-help" />
-            <div id="anno-apertura-help" style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            <input type="number" id="anno-apertura" className="input-field" value={config.annoApertura} onChange={(e) => setConfig({ ...config, annoApertura: parseInt(e.target.value) })} min={2000} max={annoCorrente} />
+            <div style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
               {anniAttivita < 5 ? `✓ Aliquota 5% (${5 - anniAttivita} anni rimasti)` : 'Aliquota 15%'}
             </div>
           </div>
           <div className="input-group">
-            <label className="input-label" htmlFor="aliquota-override">Override Aliquota IRPEF (opzionale)</label>
+            <label className="input-label" htmlFor="aliquota-override">Override Aliquota IRPEF</label>
             <input
               type="number"
               id="aliquota-override"
@@ -92,32 +99,26 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
                   }
                 }
               }}
-              placeholder="Es: 5 o 15"
+              placeholder="Automatico"
               min={0}
               max={100}
               step={0.01}
-              aria-describedby="aliquota-override-help"
             />
-            <div id="aliquota-override-help" style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              {config.aliquotaOverride !== null
-                ? `✓ Usando aliquota custom: ${config.aliquotaOverride}%`
-                : 'Lascia vuoto per usare l\'aliquota automatica'}
-            </div>
           </div>
         </div>
 
-        <div className="card">
-          <h2 className="card-title">Codici ATECO</h2>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <div style={{ marginTop: 16 }}>
+          <label className="input-label">Codici ATECO</label>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <input type="text" className="input-field" value={newAteco} onChange={(e) => setNewAteco(e.target.value)} placeholder="Es: 62.01.00" style={{ flex: 1 }} />
             <button className="btn btn-primary" onClick={addAteco} aria-label="Aggiungi codice ATECO"><Plus size={18} aria-hidden="true" /></button>
           </div>
           {config.codiciAteco.length > 0 ? (
-            <div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
               {config.codiciAteco.map((code, i) => (
                 <div key={i} className="tag" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                   {code}
-<button
+                  <button
                     type="button"
                     aria-label={`Rimuovi codice ${code}`}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'var(--text-secondary)', borderRadius: 4 }}
@@ -127,17 +128,146 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
                   </button>
                 </div>
               ))}
+              <span style={{ marginLeft: 'auto', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                Coefficiente: <strong style={{ color: 'var(--accent-green)' }}>{coefficienteMedio}%</strong>
+              </span>
             </div>
-          ) : <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Aggiungi ATECO per coefficiente redditività</p>}
-          {config.codiciAteco.length > 0 && (
-            <div style={{ marginTop: 16, padding: 12, background: 'var(--bg-secondary)', borderRadius: 8 }}>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Coefficiente</div>
-              <div style={{ fontSize: '1.3rem', fontWeight: 600 }}>{coefficienteMedio}%</div>
-            </div>
-          )}
+          ) : <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Aggiungi ATECO per coefficiente redditività</p>}
         </div>
       </div>
 
+      {/* Dati Emittente per fatture XML */}
+      <div className="card">
+        <h2 className="card-title">Dati Emittente (per fatture XML)</h2>
+
+        <div className="input-group">
+          <label className="input-label" htmlFor="emittente-cf">Codice Fiscale</label>
+          <input
+            type="text"
+            id="emittente-cf"
+            className="input-field"
+            value={config.emittente?.codiceFiscale || ''}
+            onChange={(e) => setConfig({
+              ...config,
+              emittente: { ...config.emittente, codiceFiscale: e.target.value.toUpperCase() } as EmittenteConfig
+            })}
+            placeholder="RSSMRA85M01H501Z"
+            maxLength={16}
+            style={{ fontFamily: 'Space Mono' }}
+          />
+        </div>
+
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label" htmlFor="emittente-nome">Nome</label>
+            <input
+              type="text"
+              id="emittente-nome"
+              className="input-field"
+              value={config.emittente?.nome || ''}
+              onChange={(e) => setConfig({
+                ...config,
+                emittente: { ...config.emittente, nome: e.target.value.toUpperCase() } as EmittenteConfig
+              })}
+              placeholder="MARIO"
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label" htmlFor="emittente-cognome">Cognome</label>
+            <input
+              type="text"
+              id="emittente-cognome"
+              className="input-field"
+              value={config.emittente?.cognome || ''}
+              onChange={(e) => setConfig({
+                ...config,
+                emittente: { ...config.emittente, cognome: e.target.value.toUpperCase() } as EmittenteConfig
+              })}
+              placeholder="ROSSI"
+            />
+          </div>
+        </div>
+
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label" htmlFor="emittente-indirizzo">Indirizzo</label>
+            <input
+              type="text"
+              id="emittente-indirizzo"
+              className="input-field"
+              value={config.emittente?.indirizzo || ''}
+              onChange={(e) => setConfig({
+                ...config,
+                emittente: { ...config.emittente, indirizzo: e.target.value.toUpperCase() } as EmittenteConfig
+              })}
+              placeholder="VIA ROMA"
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label" htmlFor="emittente-civico">N. Civico</label>
+            <input
+              type="text"
+              id="emittente-civico"
+              className="input-field"
+              value={config.emittente?.numeroCivico || ''}
+              onChange={(e) => setConfig({
+                ...config,
+                emittente: { ...config.emittente, numeroCivico: e.target.value } as EmittenteConfig
+              })}
+              placeholder="1"
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 80px', gap: 12 }}>
+          <div className="input-group">
+            <label className="input-label" htmlFor="emittente-cap">CAP</label>
+            <input
+              type="text"
+              id="emittente-cap"
+              className="input-field"
+              value={config.emittente?.cap || ''}
+              onChange={(e) => setConfig({
+                ...config,
+                emittente: { ...config.emittente, cap: e.target.value } as EmittenteConfig
+              })}
+              placeholder="00100"
+              maxLength={5}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label" htmlFor="emittente-comune">Comune</label>
+            <input
+              type="text"
+              id="emittente-comune"
+              className="input-field"
+              value={config.emittente?.comune || ''}
+              onChange={(e) => setConfig({
+                ...config,
+                emittente: { ...config.emittente, comune: e.target.value.toUpperCase() } as EmittenteConfig
+              })}
+              placeholder="ROMA"
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label" htmlFor="emittente-provincia">Prov.</label>
+            <input
+              type="text"
+              id="emittente-provincia"
+              className="input-field"
+              value={config.emittente?.provincia || ''}
+              onChange={(e) => setConfig({
+                ...config,
+                emittente: { ...config.emittente, provincia: e.target.value.toUpperCase() } as EmittenteConfig
+              })}
+              placeholder="RM"
+              maxLength={2}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Clienti */}
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 className="card-title" style={{ margin: 0 }}>Clienti ({clienti.length})</h2>
@@ -166,6 +296,12 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
           </table>
           </div>
         ) : <div className="empty-state"><Users size={40} aria-hidden="true" /><p>Nessun cliente</p></div>}
+      </div>
+
+      {/* Aspetto */}
+      <div className="card">
+        <h2 className="card-title"><Palette size={16} aria-hidden="true" style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />Aspetto</h2>
+        <ThemeSwitch />
       </div>
     </>
   );

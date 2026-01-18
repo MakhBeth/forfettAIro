@@ -56,12 +56,12 @@ function transformDraftToInvoice(
       : undefined,
   };
 
-  // Build payment info if IBAN is configured
-  const payment = courtesyConfig?.iban
+  // Build payment info if IBAN is configured (use config.iban as primary source)
+  const payment = config.iban
     ? {
         amount: totalAmount,
-        iban: courtesyConfig.iban,
-        bank: courtesyConfig.bankName,
+        iban: config.iban,
+        bank: courtesyConfig?.bankName,
         method: draft.paymentMethod,
         regularPaymentDate: draft.dueDate,
       }

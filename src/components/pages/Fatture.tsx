@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, FileText, Trash2, Edit, FileArchive } from 'lucide-react';
+import { Upload, FileText, Trash2, Edit, FileArchive, FilePlus, ExternalLink } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import type { Fattura } from '../../types';
 
@@ -96,6 +96,9 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
               <option key={anno} value={anno}>Anno {anno}</option>
             ))}
           </select>
+          <button className="btn btn-success" onClick={() => setShowModal('nuova-fattura')}>
+            <FilePlus size={18} aria-hidden="true" /> Nuova Fattura
+          </button>
           <button className="btn btn-primary" onClick={() => setShowModal('upload-fattura')}>
             <Upload size={18} aria-hidden="true" /> Carica XML
           </button>
@@ -105,6 +108,15 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
           <button className="btn btn-primary" onClick={() => setShowModal('upload-zip')}>
             <FileArchive size={18} aria-hidden="true" /> Carica ZIP
           </button>
+          <a
+            href="https://ivaservizi.agenziaentrate.gov.it/portale/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-secondary"
+            style={{ textDecoration: 'none' }}
+          >
+            <ExternalLink size={18} aria-hidden="true" /> Portale ADE
+          </a>
         </div>
       </div>
 

@@ -43,7 +43,9 @@ export interface Config {
   partitaIva?: string;
   annoApertura: number;
   codiciAteco: string[];
+  iban?: string;
   courtesyInvoice?: CourtesyInvoiceConfig;
+  emittente?: EmittenteConfig;
 }
 
 export interface Toast {
@@ -118,4 +120,34 @@ export interface CourtesyInvoiceDraft {
   description?: string;
   lines: CourtesyInvoiceLine[];
   paymentMethod?: string;
+}
+
+// Configurazione emittente per fatture XML FatturaPA
+export interface EmittenteConfig {
+  // Dati anagrafici
+  codiceFiscale: string;
+  nome: string;
+  cognome: string;
+  // Sede
+  indirizzo: string;
+  numeroCivico: string;
+  cap: string;
+  comune: string;
+  provincia: string;
+  nazione: string;
+}
+
+// Riga fattura per generazione XML
+export interface NuovaFatturaRiga {
+  descrizione: string;
+  quantita: number;
+  prezzoUnitario: number;
+}
+
+// Draft per nuova fattura XML
+export interface NuovaFatturaDraft {
+  clienteId: string;
+  numero: string;
+  data: string; // YYYY-MM-DD
+  righe: NuovaFatturaRiga[];
 }

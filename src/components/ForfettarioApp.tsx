@@ -17,6 +17,7 @@ import { ImportBackupModal } from './modals/ImportBackupModal';
 import { EditDataIncassoModal } from './modals/EditDataIncassoModal';
 import { CourtesyInvoiceModal } from './modals/CourtesyInvoiceModal';
 import { ManageServicesModal } from './modals/ManageServicesModal';
+import { NuovaFatturaModal } from './modals/NuovaFatturaModal';
 import { Toast } from './shared/Toast';
 import { parseFatturaXML, extractXmlFromZip } from '../lib/utils/xmlParsing';
 import { processBatchXmlFiles } from '../lib/utils/batchImport';
@@ -353,6 +354,11 @@ function ForfettarioAppInner() {
 
         <ManageServicesModal
           isOpen={showModal === 'manage-services'}
+          onClose={() => setShowModal(null)}
+        />
+
+        <NuovaFatturaModal
+          isOpen={showModal === 'nuova-fattura'}
           onClose={() => setShowModal(null)}
         />
 
