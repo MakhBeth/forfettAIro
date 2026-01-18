@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, Download, FileText, Check, ChevronDown, ChevronUp, Plus, Trash2, X } from 'lucide-react';
+import { Upload, Download, FileText, ChevronDown, ChevronUp, Plus, Trash2, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { parseXmlToInvoice } from '../../lib/pdf/xmlParser';
 import GeneratePDF from '../../lib/pdf/renderer';
@@ -371,6 +371,36 @@ export function FatturaCortesia() {
           </select>
         </div>
 
+        {/* MODIFICA DATI FATTURA - collapsible */}
+        {selectedFile && parsedInvoice && (
+          <details style={{ marginTop: 20 }}>
+            <summary
+              style={{
+                cursor: 'pointer',
+                padding: '12px 16px',
+                background: 'var(--bg-secondary)',
+                borderRadius: 8,
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <FileText size={18} />
+              Modifica dati fattura
+              <span style={{ marginLeft: 'auto', fontSize: '0.85rem', color: 'var(--text-muted)', fontFamily: 'Space Mono' }}>
+                {selectedFile.name}
+              </span>
+            </summary>
+            <div style={{ marginTop: 16 }}>
+              <InvoiceEditorContent
+                invoice={parsedInvoice}
+                onInvoiceChange={setParsedInvoice}
+              />
+            </div>
+          </details>
+        )}
+
         <button
           className="btn btn-success"
           onClick={handleGenerate}
@@ -386,15 +416,6 @@ export function FatturaCortesia() {
           )}
         </button>
       </div>
-
-      {/* MODIFICA DATI FATTURA */}
-      {selectedFile && parsedInvoice && (
-        <InvoiceEditor
-          invoice={parsedInvoice}
-          onInvoiceChange={setParsedInvoice}
-          fileName={selectedFile.name}
-        />
-      )}
     </>
   );
 }
@@ -432,15 +453,13 @@ function CollapsibleSection({
   );
 }
 
-// Invoice Editor Component
-function InvoiceEditor({
+// Invoice Editor Content Component (no card wrapper)
+function InvoiceEditorContent({
   invoice,
   onInvoiceChange,
-  fileName,
 }: {
   invoice: Invoice;
   onInvoiceChange: (invoice: Invoice) => void;
-  fileName: string;
 }) {
   const inst = invoice.installments[0];
 
@@ -539,20 +558,7 @@ function InvoiceEditor({
   };
 
   return (
-    <div className="card">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        <FileText size={24} style={{ color: 'var(--accent-green)' }} />
-        <div style={{ flex: 1 }}>
-          <div className="card-title" style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
-            MODIFICA DATI FATTURA
-          </div>
-          <div style={{ fontSize: '0.9rem', fontFamily: 'Space Mono', color: 'var(--text-secondary)' }}>
-            {fileName}
-          </div>
-        </div>
-        <Check size={20} style={{ color: 'var(--accent-green)' }} />
-      </div>
-
+    <>
       {/* FORNITORE */}
       <CollapsibleSection title="Fornitore (Cedente/Prestatore)" defaultOpen={false}>
         <div className="grid-2">
@@ -930,6 +936,6 @@ function InvoiceEditor({
           </div>
         </div>
       </CollapsibleSection>
-    </div>
+    </>
   );
 }
