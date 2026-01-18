@@ -1,9 +1,9 @@
 // Generate stable color for client based on ID
 export const getClientColor = (clientId: string): string => {
   const colors = [
-    '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316',
-    '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#10b981',
-    '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', '#a855f7'
+    '#10b981', '#059669', '#047857', '#22c55e', '#16a34a',
+    '#14b8a6', '#0d9488', '#0891b2', '#06b6d4', '#0ea5e9',
+    '#84cc16', '#65a30d', '#f59e0b', '#f97316', '#ef4444'
   ];
   // Simple hash function to generate consistent index
   let hash = 0;

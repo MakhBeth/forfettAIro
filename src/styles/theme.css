@@ -26,39 +26,39 @@
   overflow: visible;
 }
 
-/* Dark Theme (default) */
+/* Dark Theme (default) - Modern Green inspired by Open Props */
 :root,
 html[data-theme="dark"] {
-  --bg-primary: #0d0d12;
-  --bg-secondary: #13131a;
-  --bg-card: #1a1a24;
-  --bg-hover: #22222e;
-  --accent-primary: #5E6AD2;
-  --accent-secondary: #6E7AE2;
-  --accent-green: #10b981;
+  --bg-primary: #0c0f0e;
+  --bg-secondary: #121716;
+  --bg-card: #1a1f1e;
+  --bg-hover: #242a29;
+  --accent-primary: #047857;
+  --accent-secondary: #059669;
+  --accent-green: #16a34a;
   --accent-orange: #f59e0b;
   --accent-red: #ef4444;
-  --text-primary: #f8fafc;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
-  --border: rgba(255, 255, 255, 0.08);
+  --text-primary: #f0fdf4;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --border: rgba(52, 211, 153, 0.15);
 }
 
 /* Light Theme */
 html[data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-card: #f1f3f5;
-  --bg-hover: #e9ecef;
-  --accent-primary: #5E6AD2;
-  --accent-secondary: #4B55B8;
-  --accent-green: #059669;
-  --accent-orange: #d97706;
-  --accent-red: #dc2626;
-  --text-primary: #1a1a2e;
-  --text-secondary: #52525b;
-  --text-muted: #a1a1aa;
-  --border: rgba(0, 0, 0, 0.08);
+  --bg-primary: #f3f6f4;
+  --bg-secondary: #e8edea;
+  --bg-card: #ffffff;
+  --bg-hover: #d9e2dc;
+  --accent-primary: #047857;
+  --accent-secondary: #065f46;
+  --accent-green: #15803d;
+  --accent-orange: #c2410c;
+  --accent-red: #b91c1c;
+  --text-primary: #052e16;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --border: rgba(4, 120, 87, 0.15);
 }
 
 
@@ -89,7 +89,7 @@ body {
   font-family: 'Space Mono', monospace;
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--accent-primary);
+  color: #34d399;
   margin-bottom: 8px;
   letter-spacing: -1px;
 }
@@ -98,6 +98,10 @@ body {
   font-size: 0.75rem;
   color: var(--text-muted);
   margin-bottom: 32px;
+}
+
+html[data-theme="light"] .logo {
+  color: #047857;
 }
 
 .nav-item {
@@ -278,9 +282,9 @@ select.input-field option {
 .calendar-day:focus-visible { outline: 2px solid var(--accent-secondary); outline-offset: 2px; }
 .calendar-day.today { border: 2px solid var(--accent-primary); }
 .calendar-day.other-month { color: var(--text-muted); opacity: 0.5; }
-.calendar-day.weekend { background: rgba(139, 92, 246, 0.08); }
-.calendar-day.has-work { background: rgba(99, 102, 241, 0.2); }
-.calendar-day.weekend.has-work { background: rgba(99, 102, 241, 0.25); }
+.calendar-day.weekend { background: rgba(4, 120, 87, 0.08); }
+.calendar-day.has-work { background: rgba(16, 185, 129, 0.2); }
+.calendar-day.weekend.has-work { background: rgba(16, 185, 129, 0.25); }
 
 .calendar-day-number {
   font-weight: 600;
@@ -337,7 +341,7 @@ select.input-field option {
   transition: all 0.2s;
 }
 
-.upload-zone:hover { border-color: var(--accent-primary); background: rgba(99, 102, 241, 0.05); }
+.upload-zone:hover { border-color: var(--accent-primary); background: rgba(4, 120, 87, 0.05); }
 .upload-zone:focus-within { border-color: var(--accent-primary); outline: 2px solid var(--accent-secondary); outline-offset: 2px; }
 
 .tag { display: inline-block; padding: 4px 10px; background: var(--bg-hover); border-radius: 6px; font-size: 0.8rem; margin-right: 6px; margin-bottom: 6px; }

@@ -53,7 +53,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
 
   // Grafici
   const pieData = fatturatoPerCliente.slice(0, 5).map((c, i) => ({
-    name: c.nome, value: c.totale, color: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe', '#e0e7ff'][i]
+    name: c.nome, value: c.totale, color: ['#047857', '#059669', '#10b981', '#34d399', '#6ee7b7'][i]
   }));
 
   const mesiData = Array.from({ length: 12 }, (_, i) => ({
@@ -158,7 +158,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
         </div>
       </div>
 
-      <div className="card" style={{ background: 'linear-gradient(135deg, var(--bg-card) 0%, rgba(99,102,241,0.1) 100%)' }}>
+      <div className="card" style={{ background: 'linear-gradient(135deg, var(--bg-card) 0%, rgba(4,120,87,0.1) 100%)' }}>
         <div className="grid-3" style={{ alignItems: 'center' }}>
           <div>
             <h2 className="card-title">Totale da Accantonare</h2>
