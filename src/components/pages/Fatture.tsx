@@ -129,18 +129,18 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <button
-              className="btn btn-primary"
+              className="btn btn-primary tooltip"
               onClick={() => setShowModal('batch-upload-fattura')}
-              title="Batch Import"
+              data-tooltip="Batch Import"
               aria-label="Batch Import"
               style={{ padding: '10px' }}
             >
               <FileText size={18} aria-hidden="true" />
             </button>
             <button
-              className="btn btn-primary"
+              className="btn btn-primary tooltip"
               onClick={() => setShowModal('upload-zip')}
-              title="Carica ZIP"
+              data-tooltip="Carica ZIP"
               aria-label="Carica ZIP"
               style={{ padding: '10px' }}
             >
@@ -150,8 +150,8 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
               href="https://ivaservizi.agenziaentrate.gov.it/portale/"
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-secondary"
-              title="Portale Agenzia delle Entrate"
+              className="btn btn-secondary tooltip"
+              data-tooltip="Portale ADE"
               aria-label="Portale Agenzia delle Entrate"
               style={{ textDecoration: 'none', padding: '10px' }}
             >
