@@ -13,6 +13,7 @@ Added "Fattura di Cortesia" (courtesy invoice) feature that converts FatturaPA X
 
 1. **Dedicated Page** (`/fattura-cortesia`)
    - XML file upload for FatturaPA
+   - Edit invoice data before generating (collapsible sections)
    - Language selector (IT/EN/DE)
    - Primary color customization
    - Footer toggle
@@ -70,8 +71,9 @@ public/fonts/
 1. Go to **Fattura di Cortesia** in sidebar
 2. Configure colors/footer if desired
 3. Upload FatturaPA XML file
-4. Select language
-5. Click **Genera PDF**
+4. Edit invoice data if needed (collapsible sections)
+5. Select language
+6. Click **Genera PDF**
 
 ---
 
@@ -84,8 +86,8 @@ public/fonts/
 
 ---
 
-## Next Steps (Optional Enhancements)
+## Next Steps
 
-- [ ] Edit invoice data before generating
-- [ ] Preview PDF before download
+- [x] Edit invoice data before generating
+- [ ] Add settings to override footer text and link
 - [ ] Add drag-and-drop for XML upload
