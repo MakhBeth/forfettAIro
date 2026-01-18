@@ -118,8 +118,8 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
             />
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, width: '100%' }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             <button className="btn btn-success" onClick={() => setShowModal('nuova-fattura')}>
               <FilePlus size={18} aria-hidden="true" /> Nuova Fattura
             </button>
@@ -127,7 +127,7 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
               <Upload size={18} aria-hidden="true" /> Carica XML
             </button>
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginLeft: 'auto' }}>
             <div className="icon-btn-labeled">
               <button
                 className="btn btn-primary tooltip"
