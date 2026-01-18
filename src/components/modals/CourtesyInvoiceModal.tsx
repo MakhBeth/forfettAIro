@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { X, Check, Plus, Trash2, Upload, FileText, Edit2 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useDialog } from '../../hooks/useDialog';
 import { parseXmlToInvoice, validateInvoice } from '../../lib/pdf/xmlParser';
 import GeneratePDF from '../../lib/pdf/renderer';
 import { pdf } from '@react-pdf/renderer';
@@ -14,17 +15,7 @@ interface CourtesyInvoiceModalProps {
 
 export function CourtesyInvoiceModal({ isOpen, onClose }: CourtesyInvoiceModalProps) {
   const { config, showToast } = useApp();
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
+  const { dialogRef, handleClick } = useDialog(isOpen, onClose);
 
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -177,10 +168,6 @@ export function CourtesyInvoiceModal({ isOpen, onClose }: CourtesyInvoiceModalPr
     setActiveTab('upload');
   };
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) onClose();
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -188,9 +175,9 @@ export function CourtesyInvoiceModal({ isOpen, onClose }: CourtesyInvoiceModalPr
       ref={dialogRef}
       className="modal"
       onClose={onClose}
-      onClick={handleBackdropClick}
+      onClick={handleClick}
       aria-labelledby="courtesy-invoice-title"
-      style={{ maxWidth: 950, maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+      style={{ maxWidth: 950, maxHeight: '85vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
     >
         <div className="modal-header">
           <h3 id="courtesy-invoice-title" className="modal-title">Genera Fattura di Cortesia</h3>

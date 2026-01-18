@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { X, Check, Clock } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
 import type { WorkLog, Cliente } from '../../types';
 
 interface AddWorkLogModalProps {
@@ -13,26 +13,12 @@ interface AddWorkLogModalProps {
 }
 
 export function AddWorkLogModal({ isOpen, onClose, selectedDate, newWorkLog, setNewWorkLog, clienti, onAdd }: AddWorkLogModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) onClose();
-  };
+  const { dialogRef, handleClick } = useDialog(isOpen, onClose);
 
   if (!isOpen) return null;
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="add-worklog-title">
+    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleClick} aria-labelledby="add-worklog-title">
         <div className="modal-header">
           <h3 id="add-worklog-title" className="modal-title">Registra Lavoro</h3>
           <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>

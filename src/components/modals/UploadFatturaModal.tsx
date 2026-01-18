@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { X, Upload } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
 
 interface UploadFatturaModalProps {
   isOpen: boolean;
@@ -8,26 +8,12 @@ interface UploadFatturaModalProps {
 }
 
 export function UploadFatturaModal({ isOpen, onClose, onUpload }: UploadFatturaModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) onClose();
-  };
+  const { dialogRef, handleClick } = useDialog(isOpen, onClose);
 
   if (!isOpen) return null;
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="upload-fattura-title">
+    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleClick} aria-labelledby="upload-fattura-title">
         <div className="modal-header">
           <h3 id="upload-fattura-title" className="modal-title">Carica Fattura XML</h3>
           <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>

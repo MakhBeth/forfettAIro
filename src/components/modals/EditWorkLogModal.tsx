@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { X, Check, Clock } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
 import type { WorkLog, Cliente } from '../../types';
 
 interface EditWorkLogModalProps {
@@ -12,21 +12,7 @@ interface EditWorkLogModalProps {
 }
 
 export function EditWorkLogModal({ isOpen, onClose, workLog, setWorkLog, clienti, onUpdate }: EditWorkLogModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) onClose();
-  };
+  const { dialogRef, handleClick } = useDialog(isOpen, onClose);
 
   if (!isOpen || !workLog) return null;
 
@@ -35,7 +21,7 @@ export function EditWorkLogModal({ isOpen, onClose, workLog, setWorkLog, clienti
   const isHourly = billingUnit === 'ore';
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="edit-worklog-title">
+    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleClick} aria-labelledby="edit-worklog-title">
         <div className="modal-header">
           <h3 id="edit-worklog-title" className="modal-title">Modifica Attività</h3>
           <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>

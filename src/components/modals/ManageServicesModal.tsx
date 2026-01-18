@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { X, Plus, Trash2, Save } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useDialog } from '../../hooks/useDialog';
 import type { ServiceTemplate } from '../../types';
 
 interface ManageServicesModalProps {
@@ -10,17 +11,7 @@ interface ManageServicesModalProps {
 
 export function ManageServicesModal({ isOpen, onClose }: ManageServicesModalProps) {
   const { config, setConfig, showToast } = useApp();
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
+  const { dialogRef, handleClick } = useDialog(isOpen, onClose);
 
   const [services, setServices] = useState<ServiceTemplate[]>(
     config.courtesyInvoice?.defaultServices || []
@@ -73,14 +64,10 @@ export function ManageServicesModal({ isOpen, onClose }: ManageServicesModalProp
     onClose();
   };
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) onClose();
-  };
-
   if (!isOpen) return null;
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="manage-services-title" style={{ maxWidth: 700 }}>
+    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleClick} aria-labelledby="manage-services-title" style={{ maxWidth: 700 }}>
         <div className="modal-header">
           <h3 id="manage-services-title" className="modal-title">Gestisci Servizi Predefiniti</h3>
           <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>

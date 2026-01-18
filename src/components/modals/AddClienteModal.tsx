@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { X, Check } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
 import type { Cliente } from '../../types';
 
 interface AddClienteModalProps {
@@ -11,26 +11,12 @@ interface AddClienteModalProps {
 }
 
 export function AddClienteModal({ isOpen, onClose, newCliente, setNewCliente, onAdd }: AddClienteModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) onClose();
-  };
+  const { dialogRef, handleClick } = useDialog(isOpen, onClose);
 
   if (!isOpen) return null;
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="add-cliente-title">
+    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleClick} aria-labelledby="add-cliente-title">
         <div className="modal-header">
           <h3 id="add-cliente-title" className="modal-title">Nuovo Cliente</h3>
           <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>

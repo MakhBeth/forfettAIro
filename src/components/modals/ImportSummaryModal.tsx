@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { X, Check, AlertTriangle } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
 import type { ImportSummary } from '../../types';
 
 interface ImportSummaryModalProps {
@@ -9,26 +9,12 @@ interface ImportSummaryModalProps {
 }
 
 export function ImportSummaryModal({ isOpen, onClose, summary }: ImportSummaryModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) onClose();
-  };
+  const { dialogRef, handleClick } = useDialog(isOpen, onClose);
 
   if (!isOpen || !summary) return null;
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="import-summary-title">
+    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleClick} aria-labelledby="import-summary-title">
         <div className="modal-header">
           <h3 id="import-summary-title" className="modal-title">Riepilogo Importazione</h3>
           <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>

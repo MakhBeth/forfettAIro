@@ -1,6 +1,7 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { X, Download, Plus, Trash2, AlertTriangle, Upload } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useDialog } from '../../hooks/useDialog';
 import { generateFatturaXML, downloadXML, generateFileName, parseFatturaXMLForEdit } from '../../lib/xml/generator';
 import type { NuovaFatturaRiga } from '../../types';
 
@@ -12,17 +13,6 @@ interface NuovaFatturaModalProps {
 export function NuovaFatturaModal({ isOpen, onClose }: NuovaFatturaModalProps) {
   const { config, clienti, fatture, showToast, addFattura, addCliente } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
 
   // Form state
   const [clienteId, setClienteId] = useState<string>('');
@@ -289,9 +279,7 @@ export function NuovaFatturaModal({ isOpen, onClose }: NuovaFatturaModalProps) {
     onClose();
   };
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) handleClose();
-  };
+  const { dialogRef, handleClick } = useDialog(isOpen, handleClose);
 
   if (!isOpen) return null;
 
@@ -300,7 +288,7 @@ export function NuovaFatturaModal({ isOpen, onClose }: NuovaFatturaModalProps) {
       ref={dialogRef}
       className="modal"
       onClose={handleClose}
-      onClick={handleBackdropClick}
+      onClick={handleClick}
       aria-labelledby="nuova-fattura-title"
       style={{ maxWidth: 700 }}
     >

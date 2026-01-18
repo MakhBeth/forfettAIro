@@ -308,19 +308,29 @@ select.input-field option {
 .work-indicator { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-primary); position: absolute; bottom: 8px; }
 
 dialog.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 32px;
   max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
+  width: min(90%, 500px);
+  max-height: 85vh;
+  overflow-y: auto;
   color: var(--text-primary);
 }
 
 dialog.modal::backdrop {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
+}
+
+dialog.modal:focus {
+  outline: none;
 }
 
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { X, Upload, AlertTriangle } from 'lucide-react';
+import { useDialog } from '../../hooks/useDialog';
 
 interface ImportBackupModalProps {
   isOpen: boolean;
@@ -8,26 +8,12 @@ interface ImportBackupModalProps {
 }
 
 export function ImportBackupModal({ isOpen, onClose, onImport }: ImportBackupModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
-    if (e.target === dialogRef.current) onClose();
-  };
+  const { dialogRef, handleClick } = useDialog(isOpen, onClose);
 
   if (!isOpen) return null;
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleBackdropClick} aria-labelledby="import-backup-title">
+    <dialog ref={dialogRef} className="modal" onClose={onClose} onClick={handleClick} aria-labelledby="import-backup-title">
         <div className="modal-header">
           <h3 id="import-backup-title" className="modal-title">Importa Backup</h3>
           <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>
