@@ -339,6 +339,7 @@ select.input-field option {
   border: 2px dashed var(--border);
   border-radius: 16px;
   padding: 48px;
+  margin: 2px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
@@ -346,6 +347,7 @@ select.input-field option {
 
 .upload-zone:hover { border-color: var(--accent-primary); background: rgba(4, 120, 87, 0.05); }
 .upload-zone:focus-within { border-color: var(--accent-primary); outline: 2px solid var(--accent-secondary); outline-offset: 2px; }
+.upload-zone.dragging { border-color: var(--accent-green); background: rgba(16, 185, 129, 0.1); }
 
 .tag { display: inline-block; padding: 4px 10px; background: var(--bg-hover); border-radius: 6px; font-size: 0.8rem; margin-right: 6px; margin-bottom: 6px; }
 

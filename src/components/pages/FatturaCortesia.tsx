@@ -418,36 +418,24 @@ export function FatturaCortesia() {
 
           {/* Drop zone */}
           <div
+            className={`upload-zone ${isDragging ? 'dragging' : ''}`}
             onClick={handleDropZoneClick}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            style={{
-              border: `2px dashed ${isDragging ? 'var(--accent-green)' : 'var(--border)'}`,
-              borderRadius: 12,
-              padding: 30,
-              textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 12,
-              background: isDragging ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
-            }}
-            onMouseEnter={(e) => { if (!isDragging) e.currentTarget.style.borderColor = 'var(--accent-blue)'; }}
-            onMouseLeave={(e) => { if (!isDragging) e.currentTarget.style.borderColor = 'var(--border)'; }}
           >
-            <Upload size={32} style={{ color: isDragging ? 'var(--accent-green)' : 'var(--accent-blue)' }} />
+            <Upload size={40} style={{ marginBottom: 16, color: 'var(--accent-primary)' }} />
             {selectedFile ? (
-              <span style={{ fontFamily: 'Space Mono', color: 'var(--text-primary)' }}>
+              <p style={{ fontWeight: 500, fontFamily: 'Space Mono' }}>
                 {selectedFile.name}
-              </span>
+              </p>
             ) : (
-              <span style={{ color: isDragging ? 'var(--accent-green)' : 'var(--text-muted)' }}>
-                {isDragging ? 'Rilascia il file qui' : 'Trascina un file XML o clicca per selezionare'}
-              </span>
+              <>
+                <p style={{ fontWeight: 500 }}>
+                  {isDragging ? 'Rilascia il file qui' : 'Trascina un file XML o clicca per selezionare'}
+                </p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: 8 }}>Formato: FatturaPA XML</p>
+              </>
             )}
           </div>
 
