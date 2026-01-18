@@ -90,4 +90,4 @@ public/fonts/
 
 - [x] Edit invoice data before generating
 - [x] Add drag-and-drop for XML upload
-- [ ] Add settings to override footer text and link
+- [x] Add settings to override footer text and link
