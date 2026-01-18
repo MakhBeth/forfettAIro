@@ -356,12 +356,12 @@ select.input-field option {
 .backup-info p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
 
 .footer {
-  margin-top: 16px;
+  margin-top: auto;
   padding-top: 16px;
   border-top: 1px solid var(--border);
   font-size: 0.8rem;
   color: var(--text-muted);
-  text-align: center;
+  text-align: left;
 }
 
 .footer-credits {
@@ -410,12 +410,78 @@ select.input-field option {
 }
 
 @media (max-width: 768px) {
-  .sidebar { width: 100%; height: auto; position: relative; padding: 16px; }
-  .main-content { margin-left: 0; padding: 16px; }
-  .app-container { flex-direction: column; }
+  .app-container {
+    flex-direction: column;
+    padding-bottom: 70px; /* Space for bottom nav */
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 12px 16px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .logo {
+    margin-bottom: 0;
+    font-size: 1.2rem;
+  }
+
+  .logo-sub {
+    display: none;
+  }
+
+  .nav-items {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding: 8px 4px;
+    z-index: 1000;
+    gap: 0;
+  }
+
+  .nav-item {
+    flex-direction: column;
+    padding: 8px 4px;
+    margin-bottom: 0;
+    font-size: 0.65rem;
+    gap: 4px;
+    text-align: center;
+    border-radius: 8px;
+    flex: 1;
+    max-width: 72px;
+  }
+
+  .nav-item svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .sidebar > div[style*="flex"] {
+    display: none !important; /* Hide export/import buttons on mobile */
+  }
+
+  .footer {
+    display: none; /* Hide sidebar footer on mobile */
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+    padding-bottom: 24px;
+  }
+
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-  .nav-items { display: flex; overflow-x: auto; gap: 8px; }
-  .nav-item { white-space: nowrap; flex-shrink: 0; }
   .backup-section { flex-direction: column; }
   .backup-section .btn { width: 100%; justify-content: center; }
 }
