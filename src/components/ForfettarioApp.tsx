@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Settings, FileText, LayoutDashboard, Calendar, Download, Upload, Github } from 'lucide-react';
+import { Settings, FileText, LayoutDashboard, Calendar, Download, Upload, Github, FilePlus } from 'lucide-react';
 import { AppProvider, useApp } from '../context/AppContext';
 import { Dashboard } from './pages/Dashboard';
 import { FatturePage } from './pages/Fatture';
 import { Calendario } from './pages/Calendario';
 import { Impostazioni } from './pages/Impostazioni';
+import { FatturaCortesia } from './pages/FatturaCortesia';
 import { UploadFatturaModal } from './modals/UploadFatturaModal';
 import { BatchUploadModal } from './modals/BatchUploadModal';
 import { UploadZipModal } from './modals/UploadZipModal';
@@ -14,6 +15,8 @@ import { EditClienteModal } from './modals/EditClienteModal';
 import { AddWorkLogModal } from './modals/AddWorkLogModal';
 import { ImportBackupModal } from './modals/ImportBackupModal';
 import { EditDataIncassoModal } from './modals/EditDataIncassoModal';
+import { CourtesyInvoiceModal } from './modals/CourtesyInvoiceModal';
+import { ManageServicesModal } from './modals/ManageServicesModal';
 import { Toast } from './shared/Toast';
 import { parseFatturaXML, extractXmlFromZip } from '../lib/utils/xmlParsing';
 import { processBatchXmlFiles } from '../lib/utils/batchImport';
@@ -166,6 +169,9 @@ function ForfettarioAppInner() {
             <div className={`nav-item ${currentPage === 'calendario' ? 'active' : ''}`} onClick={() => setCurrentPage('calendario')}>
               <Calendar size={20} /> Calendario
             </div>
+            <div className={`nav-item ${currentPage === 'fattura-cortesia' ? 'active' : ''}`} onClick={() => setCurrentPage('fattura-cortesia')}>
+              <FilePlus size={20} /> Fattura di Cortesia
+            </div>
             <div className={`nav-item ${currentPage === 'impostazioni' ? 'active' : ''}`} onClick={() => setCurrentPage('impostazioni')}>
               <Settings size={20} /> Impostazioni
             </div>
@@ -215,6 +221,10 @@ function ForfettarioAppInner() {
               setShowModal={setShowModal}
               setSelectedDate={setSelectedDate}
             />
+          )}
+
+          {currentPage === 'fattura-cortesia' && (
+            <FatturaCortesia />
           )}
 
           {currentPage === 'impostazioni' && (
@@ -333,6 +343,16 @@ function ForfettarioAppInner() {
             setShowModal(null);
             showToast('Data incasso aggiornata!');
           }}
+        />
+
+        <CourtesyInvoiceModal
+          isOpen={showModal === 'courtesy-invoice'}
+          onClose={() => setShowModal(null)}
+        />
+
+        <ManageServicesModal
+          isOpen={showModal === 'manage-services'}
+          onClose={() => setShowModal(null)}
         />
 
         {toast && <Toast toast={toast} />}
