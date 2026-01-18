@@ -78,12 +78,12 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
 
   return (
     <>
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <h1 className="page-title">Fatture</h1>
           <p className="page-subtitle">Gestisci le tue fatture elettroniche</p>
         </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
           <select
             className="input-field"
             value={filtroAnnoFatture}
