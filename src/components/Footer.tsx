@@ -1,12 +1,9 @@
 import React from 'react';
 import { Github } from 'lucide-react';
 import styles from './Footer.module.css';
+import { version } from '../../package.json';
 
-interface FooterProps {
-  version?: string;
-}
-
-const Footer: React.FC<FooterProps> = ({ version = '2.0.0' }) => {
+const Footer: React.FC = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
