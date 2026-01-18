@@ -122,7 +122,7 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
 
       {recapData.length > 0 && (
         <div className="card">
-          <div className="card-title">Riepilogo Mensile Fatturazione</div>
+          <h2 className="card-title">Riepilogo Mensile Fatturazione</h2>
           <table className="table">
             <thead>
               <tr>
@@ -165,7 +165,7 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
         return d.getMonth() === currentMonth.getMonth() && d.getFullYear() === currentMonth.getFullYear();
       }).length > 0 && (
         <div className="card">
-          <div className="card-title">Attività del Mese</div>
+          <h2 className="card-title">Attività del Mese</h2>
           <table className="table">
             <thead><tr><th>Data</th><th>Cliente</th><th>Durata</th><th>Note</th><th></th></tr></thead>
             <tbody>

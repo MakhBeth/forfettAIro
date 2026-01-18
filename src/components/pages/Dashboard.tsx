@@ -78,6 +78,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
             onClick={() => setAnnoSelezionato(annoSelezionato - 1)}
             disabled={annoSelezionato <= annoPiuVecchio}
             style={{ padding: '8px 12px' }}
+            aria-label="Anno precedente"
           >
             ←
           </button>
@@ -86,6 +87,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
             value={annoSelezionato}
             onChange={(e) => setAnnoSelezionato(parseInt(e.target.value))}
             style={{ width: 'auto', padding: '8px 12px', fontSize: '1rem', fontWeight: 600 }}
+            aria-label="Seleziona anno"
           >
             {Array.from({ length: annoCorrente - annoPiuVecchio + 1 }, (_, i) => {
               const year = annoCorrente - i;
@@ -97,6 +99,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
             onClick={() => setAnnoSelezionato(annoSelezionato + 1)}
             disabled={annoSelezionato >= annoCorrente}
             style={{ padding: '8px 12px' }}
+            aria-label="Anno successivo"
           >
             →
           </button>
@@ -115,20 +118,20 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
           gap: '8px',
           color: '#fbbf24'
         }}>
-          <Clock size={18} />
+          <Clock size={18} aria-hidden="true" />
           <span style={{ fontWeight: 500 }}>Stai visualizzando dati storici dell'anno {annoSelezionato}</span>
         </div>
       )}
 
       <div className="grid-4">
         <div className="card">
-          <div className="card-title">Fatturato Anno</div>
+          <h2 className="card-title">Fatturato Anno</h2>
           <div className="stat-value" style={{ color: 'var(--accent-green)' }}>€{totaleFatturato.toLocaleString('it-IT')}</div>
           <div className="stat-label">{fattureAnnoCorrente.length} fatture incassate</div>
         </div>
 
         <div className="card">
-          <div className="card-title">Al Limite (85k)</div>
+          <h2 className="card-title">Al Limite (85k)</h2>
           <div className="stat-value" style={{ color: percentualeLimite > 90 ? 'var(--accent-red)' : percentualeLimite > 70 ? 'var(--accent-orange)' : 'var(--accent-primary)' }}>
             {percentualeLimite.toFixed(1)}%
           </div>
@@ -139,7 +142,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
         </div>
 
         <div className="card">
-          <div className="card-title">IRPEF da accantonare</div>
+          <h2 className="card-title">IRPEF da accantonare</h2>
           <div className="stat-value" style={{ color: 'var(--accent-orange)' }}>€{irpefDovuta.toLocaleString('it-IT', { maximumFractionDigits: 0 })}</div>
           <div className="stat-label">
             Aliquota {(aliquotaIrpef * 100).toFixed(2)}%
@@ -149,7 +152,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
         </div>
 
         <div className="card">
-          <div className="card-title">INPS da accantonare</div>
+          <h2 className="card-title">INPS da accantonare</h2>
           <div className="stat-value" style={{ color: 'var(--accent-orange)' }}>€{inpsDovuta.toLocaleString('it-IT', { maximumFractionDigits: 0 })}</div>
           <div className="stat-label">Gestione Separata 26.07%</div>
         </div>
@@ -158,14 +161,14 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
       <div className="card" style={{ background: 'linear-gradient(135deg, var(--bg-card) 0%, rgba(99,102,241,0.1) 100%)' }}>
         <div className="grid-3" style={{ alignItems: 'center' }}>
           <div>
-            <div className="card-title">Totale da Accantonare</div>
+            <h2 className="card-title">Totale da Accantonare</h2>
             <div className="stat-value" style={{ fontSize: '2.8rem' }}>€{totaleTasse.toLocaleString('it-IT', { maximumFractionDigits: 0 })}</div>
             <div className="stat-label">Reddito imponibile €{redditoImponibile.toLocaleString('it-IT', { maximumFractionDigits: 0 })} (coeff. {coefficienteMedio}%)</div>
           </div>
           <div style={{ textAlign: 'center' }}>
             {percentualeLimite > 90 && (
               <div style={{ color: 'var(--accent-red)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                <AlertTriangle size={24} />
+                <AlertTriangle size={24} aria-hidden="true" />
                 <span style={{ fontWeight: 600 }}>Vicino al limite!</span>
               </div>
             )}
@@ -181,7 +184,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
 
       <div className="grid-2">
         <div className="card">
-          <div className="card-title">Fatturato per Cliente</div>
+          <h2 className="card-title">Fatturato per Cliente</h2>
           {pieData.some(d => d.value > 0) ? (
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
@@ -192,12 +195,12 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="empty-state"><Users size={40} /><p>Nessuna fattura</p></div>
+            <div className="empty-state"><Users size={40} aria-hidden="true" /><p>Nessuna fattura</p></div>
           )}
         </div>
 
         <div className="card">
-          <div className="card-title">Andamento Mensile</div>
+          <h2 className="card-title">Andamento Mensile</h2>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={mesiData}>
               <XAxis dataKey="mese" stroke="var(--text-muted)" />
@@ -211,7 +214,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
 
       {orePerCliente.length > 0 && (
         <div className="card">
-          <div className="card-title">Ore Lavorate per Cliente</div>
+          <h2 className="card-title">Ore Lavorate per Cliente</h2>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={orePerCliente.slice(0, 5)} layout="vertical">
               <XAxis type="number" stroke="var(--text-muted)" />

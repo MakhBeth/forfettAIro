@@ -1,5 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 10000;
+  padding: 16px 24px;
+  background: var(--accent-primary);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 0 0 8px 0;
+}
+
+.skip-link:focus {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+  overflow: visible;
+}
+
 :root {
   --bg-primary: #0a0a0f;
   --bg-secondary: #12121a;
@@ -11,8 +37,8 @@
   --accent-orange: #f59e0b;
   --accent-red: #ef4444;
   --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-secondary: #b8c5d6;
+  --text-muted: #8896a8;
   --border: #2a2a3a;
 }
 
@@ -346,6 +372,9 @@ select.input-field option {
   color: var(--accent-primary);
   text-decoration: none;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .footer-credits a:hover {
@@ -368,6 +397,7 @@ select.input-field option {
   color: var(--text-secondary);
   text-decoration: none;
   transition: color 0.2s;
+  min-height: 44px;
 }
 
 .footer-link a:hover {

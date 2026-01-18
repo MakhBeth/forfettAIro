@@ -238,9 +238,9 @@ export function FatturaCortesia() {
 
       {/* IMPOSTAZIONI PDF */}
       <div className="card">
-        <div className="card-title" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
+        <h2 className="card-title" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
           IMPOSTAZIONI PDF
-        </div>
+        </h2>
 
         {/* Logo */}
         <div className="input-group">
@@ -275,7 +275,7 @@ export function FatturaCortesia() {
                   cursor: 'pointer',
                 }}
               >
-                <Upload size={18} />
+                <Upload size={18} aria-hidden="true" />
                 <span>Carica logo</span>
                 <input
                   type="file"
@@ -305,12 +305,13 @@ export function FatturaCortesia() {
                 className="input-field"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
+                aria-label="Codice esadecimale colore primario"
                 style={{ flex: 1 }}
               />
             </div>
             {!isPrimaryContrastOk && (
               <div style={{ marginTop: 8, padding: '8px 12px', background: 'rgba(245, 158, 11, 0.15)', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem' }}>
-                <AlertTriangle size={16} style={{ color: 'var(--accent-orange)', flexShrink: 0 }} />
+                <AlertTriangle size={16} aria-hidden="true" style={{ color: 'var(--accent-orange)', flexShrink: 0 }} />
                 <span style={{ color: 'var(--accent-orange)' }}>Contrasto {primaryContrast.toFixed(1)}:1 (min 4.5:1)</span>
                 <button
                   type="button"
@@ -338,12 +339,13 @@ export function FatturaCortesia() {
                 className="input-field"
                 value={textColor}
                 onChange={(e) => setTextColor(e.target.value)}
+                aria-label="Codice esadecimale colore testo"
                 style={{ flex: 1 }}
               />
             </div>
             {!isTextContrastOk && (
               <div style={{ marginTop: 8, padding: '8px 12px', background: 'rgba(245, 158, 11, 0.15)', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem' }}>
-                <AlertTriangle size={16} style={{ color: 'var(--accent-orange)', flexShrink: 0 }} />
+                <AlertTriangle size={16} aria-hidden="true" style={{ color: 'var(--accent-orange)', flexShrink: 0 }} />
                 <span style={{ color: 'var(--accent-orange)' }}>Contrasto {textContrast.toFixed(1)}:1 (min 4.5:1)</span>
                 <button
                   type="button"
@@ -407,9 +409,9 @@ export function FatturaCortesia() {
 
       {/* GENERA PDF */}
       <div className="card">
-        <div className="card-title" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
+        <h2 className="card-title" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
           GENERA PDF
-        </div>
+        </h2>
 
         <div className="input-group">
           <label className="input-label">Seleziona file XML FatturaPA</label>
@@ -486,7 +488,7 @@ export function FatturaCortesia() {
                 gap: 8,
               }}
             >
-              <FileText size={18} />
+              <FileText size={18} aria-hidden="true" />
               Modifica dati fattura
               <span style={{ marginLeft: 'auto', fontSize: '0.85rem', color: 'var(--text-muted)', fontFamily: 'Space Mono' }}>
                 {selectedFile.name}
@@ -511,7 +513,7 @@ export function FatturaCortesia() {
             'Generando...'
           ) : (
             <>
-              <Download size={18} /> Genera PDF
+              <Download size={18} aria-hidden="true" /> Genera PDF
             </>
           )}
         </button>
@@ -701,6 +703,7 @@ function InvoiceEditorContent({
               className="input-field"
               value={invoice.invoicer.office?.address || ''}
               onChange={(e) => updateInvoicerOffice({ address: e.target.value })}
+              autoComplete="street-address"
             />
           </div>
           <div className="input-group">
@@ -721,6 +724,7 @@ function InvoiceEditorContent({
               className="input-field"
               value={invoice.invoicer.office?.cap || ''}
               onChange={(e) => updateInvoicerOffice({ cap: e.target.value })}
+              autoComplete="postal-code"
             />
           </div>
           <div className="input-group">
@@ -730,6 +734,7 @@ function InvoiceEditorContent({
               className="input-field"
               value={invoice.invoicer.office?.city || ''}
               onChange={(e) => updateInvoicerOffice({ city: e.target.value })}
+              autoComplete="address-level2"
             />
           </div>
         </div>
@@ -763,6 +768,7 @@ function InvoiceEditorContent({
               className="input-field"
               value={invoice.invoicer.contacts?.tel || ''}
               onChange={(e) => updateInvoicerContacts({ tel: e.target.value })}
+              autoComplete="tel"
             />
           </div>
           <div className="input-group">
@@ -772,6 +778,7 @@ function InvoiceEditorContent({
               className="input-field"
               value={invoice.invoicer.contacts?.email || ''}
               onChange={(e) => updateInvoicerContacts({ email: e.target.value })}
+              autoComplete="email"
             />
           </div>
         </div>
@@ -807,6 +814,7 @@ function InvoiceEditorContent({
               className="input-field"
               value={invoice.invoicee.office?.address || ''}
               onChange={(e) => updateInvoiceeOffice({ address: e.target.value })}
+              autoComplete="street-address"
             />
           </div>
           <div className="input-group">
@@ -827,6 +835,7 @@ function InvoiceEditorContent({
               className="input-field"
               value={invoice.invoicee.office?.cap || ''}
               onChange={(e) => updateInvoiceeOffice({ cap: e.target.value })}
+              autoComplete="postal-code"
             />
           </div>
           <div className="input-group">
@@ -836,6 +845,7 @@ function InvoiceEditorContent({
               className="input-field"
               value={invoice.invoicee.office?.city || ''}
               onChange={(e) => updateInvoiceeOffice({ city: e.target.value })}
+              autoComplete="address-level2"
             />
           </div>
         </div>
@@ -1036,6 +1046,7 @@ function InvoiceEditorContent({
               className="input-field"
               value={inst.payment?.iban || ''}
               onChange={(e) => updatePayment({ iban: e.target.value })}
+              autoComplete="off"
             />
           </div>
           <div className="input-group">

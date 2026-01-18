@@ -38,39 +38,40 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
       </div>
 
       <div className="card">
-        <div className="card-title"><Database size={16} style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />Backup & Ripristino</div>
+        <h2 className="card-title"><Database size={16} aria-hidden="true" style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />Backup & Ripristino</h2>
         <div className="backup-section">
-          <button className="btn btn-success" onClick={handleExport}><Download size={18} /> Esporta backup</button>
-          <button className="btn btn-primary" onClick={() => setShowModal('import')}><Upload size={18} /> Importa backup</button>
+          <button className="btn btn-success" onClick={handleExport}><Download size={18} aria-hidden="true" /> Esporta backup</button>
+          <button className="btn btn-primary" onClick={() => setShowModal('import')}><Upload size={18} aria-hidden="true" /> Importa backup</button>
         </div>
         <div className="backup-info">
-          <h4>ℹ️ Info backup</h4>
+          <h2>ℹ️ Info backup</h2>
           <p>I dati sono in IndexedDB (locale). Esporta regolarmente per sicurezza. Il JSON contiene: config, clienti, fatture e ore.</p>
         </div>
       </div>
 
       <div className="grid-2">
         <div className="card">
-          <div className="card-title">Dati P.IVA</div>
+          <h2 className="card-title">Dati P.IVA</h2>
           <div className="input-group">
-            <label className="input-label">Nome Attività</label>
-            <input type="text" className="input-field" value={config.nomeAttivita} onChange={(e) => setConfig({ ...config, nomeAttivita: e.target.value })} placeholder="Es: Mario Rossi - Consulente" />
+            <label className="input-label" htmlFor="nome-attivita">Nome Attività</label>
+            <input type="text" id="nome-attivita" className="input-field" value={config.nomeAttivita} onChange={(e) => setConfig({ ...config, nomeAttivita: e.target.value })} placeholder="Es: Mario Rossi - Consulente" autoComplete="organization" />
           </div>
           <div className="input-group">
-            <label className="input-label">Partita IVA</label>
-            <input type="text" className="input-field" value={config.partitaIva} onChange={(e) => setConfig({ ...config, partitaIva: e.target.value })} placeholder="12345678901" maxLength={11} />
+            <label className="input-label" htmlFor="partita-iva">Partita IVA</label>
+            <input type="text" id="partita-iva" className="input-field" value={config.partitaIva} onChange={(e) => setConfig({ ...config, partitaIva: e.target.value })} placeholder="12345678901" maxLength={11} autoComplete="off" />
           </div>
           <div className="input-group">
-            <label className="input-label">Anno Apertura</label>
-            <input type="number" className="input-field" value={config.annoApertura} onChange={(e) => setConfig({ ...config, annoApertura: parseInt(e.target.value) })} min={2000} max={annoCorrente} />
-            <div style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            <label className="input-label" htmlFor="anno-apertura">Anno Apertura</label>
+            <input type="number" id="anno-apertura" className="input-field" value={config.annoApertura} onChange={(e) => setConfig({ ...config, annoApertura: parseInt(e.target.value) })} min={2000} max={annoCorrente} aria-describedby="anno-apertura-help" />
+            <div id="anno-apertura-help" style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
               {anniAttivita < 5 ? `✓ Aliquota 5% (${5 - anniAttivita} anni rimasti)` : 'Aliquota 15%'}
             </div>
           </div>
           <div className="input-group">
-            <label className="input-label">Override Aliquota IRPEF (opzionale)</label>
+            <label className="input-label" htmlFor="aliquota-override">Override Aliquota IRPEF (opzionale)</label>
             <input
               type="number"
+              id="aliquota-override"
               className="input-field"
               value={config.aliquotaOverride !== null ? config.aliquotaOverride : ''}
               onChange={(e) => {
@@ -88,8 +89,9 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
               min={0}
               max={100}
               step={0.01}
+              aria-describedby="aliquota-override-help"
             />
-            <div style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            <div id="aliquota-override-help" style={{ marginTop: 8, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
               {config.aliquotaOverride !== null
                 ? `✓ Usando aliquota custom: ${config.aliquotaOverride}%`
                 : 'Lascia vuoto per usare l\'aliquota automatica'}
@@ -98,7 +100,7 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
         </div>
 
         <div className="card">
-          <div className="card-title">Codici ATECO</div>
+          <h2 className="card-title">Codici ATECO</h2>
           <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <input type="text" className="input-field" value={newAteco} onChange={(e) => setNewAteco(e.target.value)} placeholder="Es: 62.01.00" style={{ flex: 1 }} />
             <button className="btn btn-primary" onClick={addAteco} aria-label="Aggiungi codice ATECO"><Plus size={18} aria-hidden="true" /></button>
@@ -131,8 +133,8 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
 
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="card-title" style={{ margin: 0 }}>Clienti ({clienti.length})</div>
-          <button className="btn btn-primary" onClick={() => setShowModal('add-cliente')}><Plus size={18} /> Aggiungi</button>
+          <h2 className="card-title" style={{ margin: 0 }}>Clienti ({clienti.length})</h2>
+          <button className="btn btn-primary" onClick={() => setShowModal('add-cliente')}><Plus size={18} aria-hidden="true" /> Aggiungi</button>
         </div>
         {clienti.length > 0 ? (
           <table className="table" style={{ marginTop: 16 }}>
@@ -154,7 +156,7 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
               ))}
             </tbody>
           </table>
-        ) : <div className="empty-state"><Users size={40} /><p>Nessun cliente</p></div>}
+        ) : <div className="empty-state"><Users size={40} aria-hidden="true" /><p>Nessun cliente</p></div>}
       </div>
     </>
   );

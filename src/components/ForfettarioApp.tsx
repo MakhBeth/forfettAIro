@@ -154,6 +154,7 @@ function ForfettarioAppInner() {
 
   return (
     <>
+      <a href="#main-content" className="skip-link">Salta al contenuto principale</a>
       <div className="app-container">
         <nav className="sidebar">
           <div className="logo">ForfettAIro</div>
@@ -179,29 +180,29 @@ function ForfettarioAppInner() {
 
           <div style={{ display: 'flex', gap: 8 }}>
             <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={exportData}>
-              <Download size={16} /> Export
+              <Download size={16} aria-hidden="true" /> Export
             </button>
             <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => setShowModal('import')}>
-              <Upload size={16} /> Import
+              <Upload size={16} aria-hidden="true" /> Import
             </button>
           </div>
 
           <div className="footer">
             <div className="footer-credits">
-              Made by <a href="https://github.com/MakhBeth" target="_blank" rel="noopener noreferrer">MakhBeth</a> with AI
+              Made by <a href="https://github.com/MakhBeth" target="_blank" rel="noopener noreferrer" aria-label="MakhBeth (si apre in una nuova finestra)">MakhBeth</a> with AI
             </div>
             <div className="footer-privacy">
               🔒 All data stays local
             </div>
             <div className="footer-link">
-              <a href="https://github.com/MakhBeth/forfettAIro" target="_blank" rel="noopener noreferrer">
-                <Github size={16} /> View on GitHub
+              <a href="https://github.com/MakhBeth/forfettAIro" target="_blank" rel="noopener noreferrer" lang="en" aria-label="View on GitHub (opens in a new window)">
+                <Github size={16} aria-hidden="true" /> View on GitHub
               </a>
             </div>
           </div>
         </nav>
 
-        <main className="main-content">
+        <main id="main-content" className="main-content">
           {currentPage === 'dashboard' && (
             <Dashboard
               annoSelezionato={annoSelezionato}

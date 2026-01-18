@@ -89,6 +89,7 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
             value={filtroAnnoFatture}
             onChange={(e) => setFiltroAnnoFatture(e.target.value)}
             style={{ width: 'auto', padding: '8px 12px' }}
+            aria-label="Filtra fatture"
           >
             <option value="tutte">Tutte le fatture</option>
             {anniDisponibili.map(anno => (
@@ -96,13 +97,13 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
             ))}
           </select>
           <button className="btn btn-primary" onClick={() => setShowModal('upload-fattura')}>
-            <Upload size={18} /> Carica XML
+            <Upload size={18} aria-hidden="true" /> Carica XML
           </button>
           <button className="btn btn-primary" onClick={() => setShowModal('batch-upload-fattura')}>
-            <FileText size={18} /> Batch Import
+            <FileText size={18} aria-hidden="true" /> Batch Import
           </button>
           <button className="btn btn-primary" onClick={() => setShowModal('upload-zip')}>
-            <FileArchive size={18} /> Carica ZIP
+            <FileArchive size={18} aria-hidden="true" /> Carica ZIP
           </button>
         </div>
       </div>
@@ -175,13 +176,13 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
             </tbody>
           </table>
         ) : (
-          <div className="empty-state"><FileText size={48} /><p>Nessuna fattura</p></div>
+          <div className="empty-state"><FileText size={48} aria-hidden="true" /><p>Nessuna fattura</p></div>
         )}
       </div>
 
       {fatturatoPerCliente.filter(c => c.totale > 0).length > 0 && (
         <div className="card">
-          <div className="card-title">Riepilogo per Cliente</div>
+          <h2 className="card-title">Riepilogo per Cliente</h2>
           <div className="grid-3">
             {fatturatoPerCliente.filter(c => c.totale > 0).map(c => (
               <div key={c.id} style={{ padding: 16, background: 'var(--bg-secondary)', borderRadius: 12 }}>
