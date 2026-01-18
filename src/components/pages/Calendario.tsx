@@ -151,6 +151,7 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
                 aria-label={`${day.date.getDate()} ${currentMonth.toLocaleString('it-IT', { month: 'long' })}${hasWork ? `, ${previewText}` : ''}`}
                 aria-current={dateStr === today ? 'date' : undefined}
               >
+                {hasWork && clientColor && <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: clientColor, position: 'absolute', top: 6, right: 6 }} aria-hidden="true" />}
                 <div className="calendar-day-number" aria-hidden="true">{day.date.getDate()}</div>
                 {hasWork && primaryClientId && clientColor && <div className="calendar-day-preview" aria-hidden="true" style={{ color: clientColor }}>{previewText}</div>}
               </button>
@@ -273,15 +274,22 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
                     default: return 0;
                   }
                 })
-                .map(log => (
-                  <tr key={log.id}>
-                    <td>{new Date(log.data + 'T12:00:00').toLocaleDateString('it-IT')}</td>
-                    <td>{clienti.find(c => c.id === log.clienteId)?.nome || '-'}</td>
-                    <td><span className="badge badge-green">{log.tipo === 'giornata' ? `${getWorkLogQuantita(log)} giornata` : `${getWorkLogQuantita(log)} ore`}</span></td>
-                    <td style={{ color: 'var(--text-secondary)' }}>{log.note || '-'}</td>
-                    <td><button className="btn btn-danger" onClick={() => removeWorkLog(log.id)} aria-label="Elimina attività"><Trash2 size={16} aria-hidden="true" /></button></td>
-                  </tr>
-                ))}
+                .map(log => {
+                  const logCliente = clienti.find(c => c.id === log.clienteId);
+                  const logColor = getClientDisplayColor(logCliente, log.clienteId);
+                  return (
+                    <tr key={log.id}>
+                      <td>{new Date(log.data + 'T12:00:00').toLocaleDateString('it-IT')}</td>
+                      <td style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: logColor, flexShrink: 0 }} />
+                        {logCliente?.nome || '-'}
+                      </td>
+                      <td><span className="badge badge-green">{log.tipo === 'giornata' ? `${getWorkLogQuantita(log)} giornata` : `${getWorkLogQuantita(log)} ore`}</span></td>
+                      <td style={{ color: 'var(--text-secondary)' }}>{log.note || '-'}</td>
+                      <td><button className="btn btn-danger" onClick={() => removeWorkLog(log.id)} aria-label="Elimina attività"><Trash2 size={16} aria-hidden="true" /></button></td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
           </div>
