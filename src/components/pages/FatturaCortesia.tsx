@@ -20,6 +20,7 @@ export function FatturaCortesia() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [parsedInvoice, setParsedInvoice] = useState<Invoice | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleSaveSettings = () => {
     setConfig({
@@ -40,9 +41,11 @@ export function FatturaCortesia() {
     showToast('Impostazioni salvate!', 'success');
   };
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const processFile = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith('.xml')) {
+      showToast('Seleziona un file XML', 'error');
+      return;
+    }
 
     setSelectedFile(file);
 
@@ -54,6 +57,35 @@ export function FatturaCortesia() {
       const message = error instanceof Error ? error.message : 'Errore parsing XML';
       showToast(message, 'error');
       setParsedInvoice(null);
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      await processFile(file);
     }
   };
 
@@ -157,29 +189,34 @@ export function FatturaCortesia() {
           {/* Drop zone */}
           <div
             onClick={handleDropZoneClick}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
             style={{
-              border: '2px dashed var(--border)',
+              border: `2px dashed ${isDragging ? 'var(--accent-green)' : 'var(--border)'}`,
               borderRadius: 12,
               padding: 30,
               textAlign: 'center',
               cursor: 'pointer',
-              transition: 'border-color 0.2s',
+              transition: 'all 0.2s',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 20,
+              gap: 12,
+              background: isDragging ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--accent-blue)')}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
+            onMouseEnter={(e) => { if (!isDragging) e.currentTarget.style.borderColor = 'var(--accent-blue)'; }}
+            onMouseLeave={(e) => { if (!isDragging) e.currentTarget.style.borderColor = 'var(--border)'; }}
           >
-            <Upload size={32} style={{ color: 'var(--accent-blue)' }} />
+            <Upload size={32} style={{ color: isDragging ? 'var(--accent-green)' : 'var(--accent-blue)' }} />
             {selectedFile ? (
               <span style={{ fontFamily: 'Space Mono', color: 'var(--text-primary)' }}>
                 {selectedFile.name}
               </span>
             ) : (
-              <span style={{ color: 'var(--text-muted)' }}>
-                Clicca per selezionare un file XML
+              <span style={{ color: isDragging ? 'var(--accent-green)' : 'var(--text-muted)' }}>
+                {isDragging ? 'Rilascia il file qui' : 'Trascina un file XML o clicca per selezionare'}
               </span>
             )}
           </div>
