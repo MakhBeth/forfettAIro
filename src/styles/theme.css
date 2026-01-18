@@ -327,6 +327,7 @@ select.input-field option {
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -339,7 +340,7 @@ select.input-field option {
   border: 2px dashed var(--border);
   border-radius: 16px;
   padding: 48px;
-  margin: 2px;
+  margin: 4px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
