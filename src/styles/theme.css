@@ -228,7 +228,7 @@ select.input-field option {
 .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
 .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
 
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
 .calendar-header { padding: 12px; text-align: center; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
 
 .calendar-day {
@@ -243,7 +243,7 @@ select.input-field option {
   transition: all 0.2s;
   font-size: 0.9rem;
   position: relative;
-  min-height: 80px;
+  min-width: 0;
   background: var(--bg-secondary);
   border: none;
   font-family: inherit;
@@ -485,12 +485,6 @@ select.input-field option {
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .backup-section { flex-direction: column; }
   .backup-section .btn { width: 100%; justify-content: center; }
-
-  /* Calendar responsive */
-  .calendar-grid { gap: 2px; }
-  .calendar-header { padding: 8px 2px; font-size: 0.7rem; }
-  .calendar-day { min-height: 50px; padding: 4px 2px; font-size: 0.8rem; }
-  .calendar-day-preview { display: none; }
 }
 
 @keyframes spin {
