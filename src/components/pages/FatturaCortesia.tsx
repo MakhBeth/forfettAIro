@@ -189,8 +189,8 @@ export function FatturaCortesia() {
                     background: 'var(--bg-secondary)',
                   }}
                 />
-                <button className="btn btn-danger btn-sm" onClick={removeLogo}>
-                  <X size={14} /> Rimuovi
+                <button className="btn btn-danger btn-sm" onClick={removeLogo} aria-label="Rimuovi logo">
+                  <X size={14} aria-hidden="true" /> Rimuovi
                 </button>
               </>
             ) : (
@@ -227,6 +227,7 @@ export function FatturaCortesia() {
                 type="color"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
+                aria-label="Seleziona colore primario"
                 style={{ width: 50, height: 40, padding: 0, border: 'none', cursor: 'pointer', borderRadius: 4 }}
               />
               <input
@@ -245,6 +246,7 @@ export function FatturaCortesia() {
                 type="color"
                 value={textColor}
                 onChange={(e) => setTextColor(e.target.value)}
+                aria-label="Seleziona colore testo"
                 style={{ width: 50, height: 40, padding: 0, border: 'none', cursor: 'pointer', borderRadius: 4 }}
               />
               <input
@@ -431,11 +433,15 @@ function CollapsibleSection({
   defaultOpen?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const sectionId = `section-${title.replace(/\s+/g, '-').toLowerCase()}`;
 
   return (
     <div style={{ marginBottom: 16 }}>
-      <div
+      <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-controls={sectionId}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -443,12 +449,20 @@ function CollapsibleSection({
           padding: '12px 0',
           cursor: 'pointer',
           borderBottom: '1px solid var(--border)',
+          background: 'transparent',
+          border: 'none',
+          borderBottomWidth: 1,
+          borderBottomStyle: 'solid',
+          borderBottomColor: 'var(--border)',
+          width: '100%',
+          textAlign: 'left',
+          font: 'inherit',
         }}
       >
         <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{title}</span>
-        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-      </div>
-      {isOpen && <div style={{ paddingTop: 16 }}>{children}</div>}
+        {isOpen ? <ChevronUp size={20} aria-hidden="true" /> : <ChevronDown size={20} aria-hidden="true" />}
+      </button>
+      {isOpen && <div id={sectionId} style={{ paddingTop: 16 }}>{children}</div>}
     </div>
   );
 }
@@ -826,8 +840,9 @@ function InvoiceEditorContent({
                   className="btn btn-danger btn-sm"
                   onClick={() => removeLine(index)}
                   style={{ padding: '4px 8px' }}
+                  aria-label={`Elimina riga ${line.number}`}
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={14} aria-hidden="true" />
                 </button>
               )}
             </div>
@@ -888,7 +903,7 @@ function InvoiceEditorContent({
           </div>
         ))}
         <button className="btn btn-secondary" onClick={addLine} style={{ marginTop: 8 }}>
-          <Plus size={18} /> Aggiungi Riga
+          <Plus size={18} aria-hidden="true" /> Aggiungi Riga
         </button>
       </CollapsibleSection>
 

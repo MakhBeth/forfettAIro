@@ -66,10 +66,10 @@ export function ManageServicesModal({ isOpen, onClose }: ManageServicesModalProp
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 700 }}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="manage-services-title" onClick={e => e.stopPropagation()} style={{ maxWidth: 700 }}>
         <div className="modal-header">
-          <h3 className="modal-title">Gestisci Servizi Predefiniti</h3>
-          <button className="close-btn" onClick={onClose}><X size={20} /></button>
+          <h3 id="manage-services-title" className="modal-title">Gestisci Servizi Predefiniti</h3>
+          <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>
         </div>
 
         <p style={{ color: 'var(--text-muted)', marginBottom: 20 }}>
@@ -94,8 +94,9 @@ export function ManageServicesModal({ isOpen, onClose }: ManageServicesModalProp
                     className="btn btn-danger btn-sm"
                     onClick={() => removeService(service.id)}
                     style={{ padding: '4px 8px' }}
+                    aria-label={`Elimina servizio ${index + 1}`}
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={14} aria-hidden="true" />
                   </button>
                 </div>
 

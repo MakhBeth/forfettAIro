@@ -11,10 +11,10 @@ export function ImportBackupModal({ isOpen, onClose, onImport }: ImportBackupMod
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="import-backup-title" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Importa Backup</h3>
-          <button className="close-btn" onClick={onClose}><X size={20} /></button>
+          <h3 id="import-backup-title" className="modal-title">Importa Backup</h3>
+          <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>
         </div>
         <div style={{ padding: 16, background: 'rgba(239, 68, 68, 0.1)', borderRadius: 12, marginBottom: 20, border: '1px solid var(--accent-red)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, color: 'var(--accent-red)' }}>

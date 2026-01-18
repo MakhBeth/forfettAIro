@@ -14,10 +14,10 @@ export function AddClienteModal({ isOpen, onClose, newCliente, setNewCliente, on
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="add-cliente-title" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Nuovo Cliente</h3>
-          <button className="close-btn" onClick={onClose}><X size={20} /></button>
+          <h3 id="add-cliente-title" className="modal-title">Nuovo Cliente</h3>
+          <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>
         </div>
         <div className="input-group">
           <label className="input-label">Nome *</label>

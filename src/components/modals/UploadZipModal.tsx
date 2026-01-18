@@ -26,10 +26,10 @@ export function UploadZipModal({ isOpen, onClose, onUpload }: UploadZipModalProp
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="upload-zip-title" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Carica File ZIP</h3>
-          <button className="close-btn" onClick={onClose}><X size={20} /></button>
+          <h3 id="upload-zip-title" className="modal-title">Carica File ZIP</h3>
+          <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>
         </div>
         {isUploading ? (
           <div style={{ padding: 40, textAlign: 'center' }}>

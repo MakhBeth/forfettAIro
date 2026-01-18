@@ -9,8 +9,13 @@ export function Toast({ toast }: ToastProps) {
   if (!toast) return null;
 
   return (
-    <div className={`toast ${toast.type}`}>
-      {toast.type === 'success' ? <Check size={20} /> : <AlertTriangle size={20} />}
+    <div
+      className={`toast ${toast.type}`}
+      role={toast.type === 'error' ? 'alert' : 'status'}
+      aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
+      aria-atomic="true"
+    >
+      {toast.type === 'success' ? <Check size={20} aria-hidden="true" /> : <AlertTriangle size={20} aria-hidden="true" />}
       <span>{toast.message}</span>
     </div>
   );

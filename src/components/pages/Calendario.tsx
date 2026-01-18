@@ -58,9 +58,9 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
 
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <button className="btn btn-secondary" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}><ChevronLeft size={20} /></button>
+          <button className="btn btn-secondary" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))} aria-label="Mese precedente"><ChevronLeft size={20} aria-hidden="true" /></button>
           <h2 style={{ fontSize: '1.3rem' }}>{currentMonth.toLocaleString('it-IT', { month: 'long', year: 'numeric' })}</h2>
-          <button className="btn btn-secondary" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}><ChevronRight size={20} /></button>
+          <button className="btn btn-secondary" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))} aria-label="Mese successivo"><ChevronRight size={20} aria-hidden="true" /></button>
         </div>
 
         <div className="calendar-grid">
@@ -98,7 +98,8 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
             }
 
             return (
-              <div
+              <button
+                type="button"
                 key={i}
                 className={`calendar-day ${day.otherMonth ? 'other-month' : ''} ${dateStr === today ? 'today' : ''} ${isWeekendDay ? 'weekend' : ''} ${hasWork ? 'has-work' : ''}`}
                 onClick={() => {
@@ -107,10 +108,13 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
                     setShowModal('add-work');
                   }
                 }}
+                disabled={day.otherMonth}
+                aria-label={`${day.date.getDate()} ${currentMonth.toLocaleString('it-IT', { month: 'long' })}${hasWork ? `, ${previewText}` : ''}`}
+                aria-current={dateStr === today ? 'date' : undefined}
               >
-                <div className="calendar-day-number">{day.date.getDate()}</div>
-                {hasWork && primaryClientId && <div className="calendar-day-preview" style={{ color: getClientColor(primaryClientId) }}>{previewText}</div>}
-              </div>
+                <div className="calendar-day-number" aria-hidden="true">{day.date.getDate()}</div>
+                {hasWork && primaryClientId && <div className="calendar-day-preview" aria-hidden="true" style={{ color: getClientColor(primaryClientId) }}>{previewText}</div>}
+              </button>
             );
           })}
         </div>
@@ -176,7 +180,7 @@ export function Calendario({ setShowModal, setSelectedDate }: CalendarioProps) {
                     <td>{clienti.find(c => c.id === log.clienteId)?.nome || '-'}</td>
                     <td><span className="badge badge-green">{log.tipo === 'giornata' ? `${getWorkLogQuantita(log)} giornata` : `${getWorkLogQuantita(log)} ore`}</span></td>
                     <td style={{ color: 'var(--text-secondary)' }}>{log.note || '-'}</td>
-                    <td><button className="btn btn-danger" onClick={() => removeWorkLog(log.id)}><Trash2 size={16} /></button></td>
+                    <td><button className="btn btn-danger" onClick={() => removeWorkLog(log.id)} aria-label="Elimina attività"><Trash2 size={16} aria-hidden="true" /></button></td>
                   </tr>
                 ))}
             </tbody>

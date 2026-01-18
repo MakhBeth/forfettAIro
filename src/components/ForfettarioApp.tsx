@@ -159,23 +159,23 @@ function ForfettarioAppInner() {
           <div className="logo">ForfettAIro</div>
           <div className="logo-sub">Vibecoded Gestione P.IVA Semplificata</div>
 
-          <div className="nav-items">
-            <div className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentPage('dashboard')}>
-              <LayoutDashboard size={20} /> Dashboard
-            </div>
-            <div className={`nav-item ${currentPage === 'fatture' ? 'active' : ''}`} onClick={() => setCurrentPage('fatture')}>
-              <FileText size={20} /> Fatture
-            </div>
-            <div className={`nav-item ${currentPage === 'calendario' ? 'active' : ''}`} onClick={() => setCurrentPage('calendario')}>
-              <Calendar size={20} /> Calendario
-            </div>
-            <div className={`nav-item ${currentPage === 'fattura-cortesia' ? 'active' : ''}`} onClick={() => setCurrentPage('fattura-cortesia')}>
-              <FilePlus size={20} /> Fattura di Cortesia
-            </div>
-            <div className={`nav-item ${currentPage === 'impostazioni' ? 'active' : ''}`} onClick={() => setCurrentPage('impostazioni')}>
-              <Settings size={20} /> Impostazioni
-            </div>
-          </div>
+          <nav className="nav-items" aria-label="Navigazione principale">
+            <button type="button" className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentPage('dashboard')} aria-current={currentPage === 'dashboard' ? 'page' : undefined}>
+              <LayoutDashboard size={20} aria-hidden="true" /> Dashboard
+            </button>
+            <button type="button" className={`nav-item ${currentPage === 'fatture' ? 'active' : ''}`} onClick={() => setCurrentPage('fatture')} aria-current={currentPage === 'fatture' ? 'page' : undefined}>
+              <FileText size={20} aria-hidden="true" /> Fatture
+            </button>
+            <button type="button" className={`nav-item ${currentPage === 'calendario' ? 'active' : ''}`} onClick={() => setCurrentPage('calendario')} aria-current={currentPage === 'calendario' ? 'page' : undefined}>
+              <Calendar size={20} aria-hidden="true" /> Calendario
+            </button>
+            <button type="button" className={`nav-item ${currentPage === 'fattura-cortesia' ? 'active' : ''}`} onClick={() => setCurrentPage('fattura-cortesia')} aria-current={currentPage === 'fattura-cortesia' ? 'page' : undefined}>
+              <FilePlus size={20} aria-hidden="true" /> Fattura di Cortesia
+            </button>
+            <button type="button" className={`nav-item ${currentPage === 'impostazioni' ? 'active' : ''}`} onClick={() => setCurrentPage('impostazioni')} aria-current={currentPage === 'impostazioni' ? 'page' : undefined}>
+              <Settings size={20} aria-hidden="true" /> Impostazioni
+            </button>
+          </nav>
 
           <div style={{ display: 'flex', gap: 8 }}>
             <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={exportData}>

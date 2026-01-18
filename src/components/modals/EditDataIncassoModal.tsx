@@ -14,10 +14,10 @@ export function EditDataIncassoModal({ isOpen, onClose, fattura, setFattura, onU
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="edit-incasso-title" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Modifica Data Incasso</h3>
-          <button className="close-btn" onClick={onClose}><X size={20} /></button>
+          <h3 id="edit-incasso-title" className="modal-title">Modifica Data Incasso</h3>
+          <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>
         </div>
         <div style={{ padding: 16, background: 'var(--bg-secondary)', borderRadius: 12, marginBottom: 20 }}>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 4 }}>Fattura</div>

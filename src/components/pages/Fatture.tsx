@@ -112,20 +112,30 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
           <table className="table">
             <thead>
               <tr>
-                <th onClick={() => handleSort('numero')} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                  Numero {ordinamentoFatture.campo === 'numero' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                <th aria-sort={ordinamentoFatture.campo === 'numero' ? (ordinamentoFatture.direzione === 'asc' ? 'ascending' : 'descending') : undefined}>
+                  <button type="button" onClick={() => handleSort('numero')}>
+                    Numero {ordinamentoFatture.campo === 'numero' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                  </button>
                 </th>
-                <th onClick={() => handleSort('data')} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                  Data Emissione {ordinamentoFatture.campo === 'data' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                <th aria-sort={ordinamentoFatture.campo === 'data' ? (ordinamentoFatture.direzione === 'asc' ? 'ascending' : 'descending') : undefined}>
+                  <button type="button" onClick={() => handleSort('data')}>
+                    Data Emissione {ordinamentoFatture.campo === 'data' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                  </button>
                 </th>
-                <th onClick={() => handleSort('dataIncasso')} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                  Data Incasso {ordinamentoFatture.campo === 'dataIncasso' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                <th aria-sort={ordinamentoFatture.campo === 'dataIncasso' ? (ordinamentoFatture.direzione === 'asc' ? 'ascending' : 'descending') : undefined}>
+                  <button type="button" onClick={() => handleSort('dataIncasso')}>
+                    Data Incasso {ordinamentoFatture.campo === 'dataIncasso' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                  </button>
                 </th>
-                <th onClick={() => handleSort('clienteNome')} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                  Cliente {ordinamentoFatture.campo === 'clienteNome' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                <th aria-sort={ordinamentoFatture.campo === 'clienteNome' ? (ordinamentoFatture.direzione === 'asc' ? 'ascending' : 'descending') : undefined}>
+                  <button type="button" onClick={() => handleSort('clienteNome')}>
+                    Cliente {ordinamentoFatture.campo === 'clienteNome' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                  </button>
                 </th>
-                <th onClick={() => handleSort('importo')} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                  Importo {ordinamentoFatture.campo === 'importo' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                <th aria-sort={ordinamentoFatture.campo === 'importo' ? (ordinamentoFatture.direzione === 'asc' ? 'ascending' : 'descending') : undefined}>
+                  <button type="button" onClick={() => handleSort('importo')}>
+                    Importo {ordinamentoFatture.campo === 'importo' && (ordinamentoFatture.direzione === 'asc' ? '↑' : '↓')}
+                  </button>
                 </th>
                 <th></th>
               </tr>
@@ -150,14 +160,15 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
                           className="btn btn-secondary btn-sm"
                           style={{ padding: '4px 8px', marginLeft: 'auto' }}
                           onClick={() => { setEditingFattura({ ...f }); setShowModal('edit-data-incasso'); }}
+                          aria-label="Modifica data incasso"
                         >
-                          <Edit size={14} />
+                          <Edit size={14} aria-hidden="true" />
                         </button>
                       </div>
                     </td>
                     <td>{f.clienteNome || clienti.find(c => c.id === f.clienteId)?.nome || '-'}</td>
                     <td style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>€{f.importo.toLocaleString('it-IT')}</td>
-                    <td><button className="btn btn-danger" onClick={() => removeFattura(f.id)}><Trash2 size={16} /></button></td>
+                    <td><button className="btn btn-danger" onClick={() => removeFattura(f.id)} aria-label="Elimina fattura"><Trash2 size={16} aria-hidden="true" /></button></td>
                   </tr>
                 );
               })}

@@ -101,14 +101,21 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
           <div className="card-title">Codici ATECO</div>
           <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <input type="text" className="input-field" value={newAteco} onChange={(e) => setNewAteco(e.target.value)} placeholder="Es: 62.01.00" style={{ flex: 1 }} />
-            <button className="btn btn-primary" onClick={addAteco}><Plus size={18} /></button>
+            <button className="btn btn-primary" onClick={addAteco} aria-label="Aggiungi codice ATECO"><Plus size={18} aria-hidden="true" /></button>
           </div>
           {config.codiciAteco.length > 0 ? (
             <div>
               {config.codiciAteco.map((code, i) => (
                 <div key={i} className="tag" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                   {code}
-                  <X size={14} style={{ cursor: 'pointer' }} onClick={() => setConfig({ ...config, codiciAteco: config.codiciAteco.filter((_, j) => j !== i) })} />
+<button
+                    type="button"
+                    aria-label={`Rimuovi codice ${code}`}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'var(--text-secondary)', borderRadius: 4 }}
+                    onClick={() => setConfig({ ...config, codiciAteco: config.codiciAteco.filter((_, j) => j !== i) })}
+                  >
+                    <X size={14} aria-hidden="true" />
+                  </button>
                 </div>
               ))}
             </div>
@@ -139,8 +146,8 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
                   <td>{c.rate && c.billingUnit ? `€${c.rate}/${c.billingUnit === 'ore' ? 'h' : 'gg'}` : '-'}</td>
                   <td>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button className="btn btn-secondary btn-sm" onClick={() => { setEditingCliente({ ...c }); setShowModal('edit-cliente'); }}><Edit size={16} /></button>
-                      <button className="btn btn-danger" onClick={() => removeCliente(c.id)}><Trash2 size={16} /></button>
+                      <button className="btn btn-secondary btn-sm" onClick={() => { setEditingCliente({ ...c }); setShowModal('edit-cliente'); }} aria-label={`Modifica ${c.nome}`}><Edit size={16} aria-hidden="true" /></button>
+                      <button className="btn btn-danger" onClick={() => removeCliente(c.id)} aria-label={`Elimina ${c.nome}`}><Trash2 size={16} aria-hidden="true" /></button>
                     </div>
                   </td>
                 </tr>

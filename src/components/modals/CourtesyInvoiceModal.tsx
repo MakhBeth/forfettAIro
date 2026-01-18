@@ -172,13 +172,16 @@ export function CourtesyInvoiceModal({ isOpen, onClose }: CourtesyInvoiceModalPr
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="courtesy-invoice-title"
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: 950, maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
       >
         <div className="modal-header">
-          <h3 className="modal-title">Genera Fattura di Cortesia</h3>
-          <button className="close-btn" onClick={onClose}>
-            <X size={20} />
+          <h3 id="courtesy-invoice-title" className="modal-title">Genera Fattura di Cortesia</h3>
+          <button className="close-btn" onClick={onClose} aria-label="Chiudi">
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
 

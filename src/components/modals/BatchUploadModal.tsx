@@ -26,10 +26,10 @@ export function BatchUploadModal({ isOpen, onClose, onUpload }: BatchUploadModal
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="batch-upload-title" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Importa File XML Multipli</h3>
-          <button className="close-btn" onClick={onClose}><X size={20} /></button>
+          <h3 id="batch-upload-title" className="modal-title">Importa File XML Multipli</h3>
+          <button className="close-btn" onClick={onClose} aria-label="Chiudi"><X size={20} aria-hidden="true" /></button>
         </div>
         {isUploading ? (
           <div style={{ padding: 40, textAlign: 'center' }}>
