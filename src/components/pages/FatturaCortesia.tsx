@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
-import { Upload, Download, FileText, Check } from 'lucide-react';
+import { Upload, Download, FileText, Check, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { parseXmlToInvoice } from '../../lib/pdf/xmlParser';
 import GeneratePDF from '../../lib/pdf/renderer';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
-import type { Invoice, PDFOptions } from '../../lib/pdf/types';
+import type { Invoice, PDFOptions, Line } from '../../lib/pdf/types';
 
 export function FatturaCortesia() {
   const { config, setConfig, showToast } = useApp();
@@ -222,34 +222,549 @@ export function FatturaCortesia() {
         </button>
       </div>
 
-      {/* File selezionato */}
+      {/* MODIFICA DATI FATTURA */}
       {selectedFile && parsedInvoice && (
-        <div
-          style={{
-            background: 'rgba(16, 185, 129, 0.1)',
-            border: '1px solid var(--accent-green)',
-            borderRadius: 12,
-            padding: 16,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-          }}
-        >
-          <FileText size={24} style={{ color: 'var(--accent-green)' }} />
-          <div>
-            <div style={{ fontWeight: 600 }}>File selezionato</div>
-            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontFamily: 'Space Mono' }}>
-              {selectedFile.name}
-            </div>
-            {parsedInvoice.installments[0] && (
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: 4 }}>
-                Fattura n. {parsedInvoice.installments[0].number} - {parsedInvoice.invoicee.name || parsedInvoice.invoicee.vat}
-              </div>
-            )}
-          </div>
-          <Check size={20} style={{ marginLeft: 'auto', color: 'var(--accent-green)' }} />
-        </div>
+        <InvoiceEditor
+          invoice={parsedInvoice}
+          onInvoiceChange={setParsedInvoice}
+          fileName={selectedFile.name}
+        />
       )}
     </>
+  );
+}
+
+// Collapsible Section Component
+function CollapsibleSection({
+  title,
+  children,
+  defaultOpen = false
+}: {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 0',
+          cursor: 'pointer',
+          borderBottom: '1px solid var(--border)',
+        }}
+      >
+        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{title}</span>
+        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+      </div>
+      {isOpen && <div style={{ paddingTop: 16 }}>{children}</div>}
+    </div>
+  );
+}
+
+// Invoice Editor Component
+function InvoiceEditor({
+  invoice,
+  onInvoiceChange,
+  fileName,
+}: {
+  invoice: Invoice;
+  onInvoiceChange: (invoice: Invoice) => void;
+  fileName: string;
+}) {
+  const inst = invoice.installments[0];
+
+  const updateInvoicer = (updates: Partial<typeof invoice.invoicer>) => {
+    onInvoiceChange({
+      ...invoice,
+      invoicer: { ...invoice.invoicer, ...updates },
+    });
+  };
+
+  const updateInvoicerOffice = (updates: Partial<NonNullable<typeof invoice.invoicer.office>>) => {
+    onInvoiceChange({
+      ...invoice,
+      invoicer: {
+        ...invoice.invoicer,
+        office: { ...invoice.invoicer.office, ...updates },
+      },
+    });
+  };
+
+  const updateInvoicerContacts = (updates: Partial<NonNullable<typeof invoice.invoicer.contacts>>) => {
+    onInvoiceChange({
+      ...invoice,
+      invoicer: {
+        ...invoice.invoicer,
+        contacts: { ...invoice.invoicer.contacts, ...updates },
+      },
+    });
+  };
+
+  const updateInvoicee = (updates: Partial<typeof invoice.invoicee>) => {
+    onInvoiceChange({
+      ...invoice,
+      invoicee: { ...invoice.invoicee, ...updates },
+    });
+  };
+
+  const updateInvoiceeOffice = (updates: Partial<NonNullable<typeof invoice.invoicee.office>>) => {
+    onInvoiceChange({
+      ...invoice,
+      invoicee: {
+        ...invoice.invoicee,
+        office: { ...invoice.invoicee.office, ...updates },
+      },
+    });
+  };
+
+  const updateInstallment = (updates: Partial<typeof inst>) => {
+    onInvoiceChange({
+      ...invoice,
+      installments: [{ ...inst, ...updates }],
+    });
+  };
+
+  const updateLine = (index: number, updates: Partial<Line>) => {
+    const newLines = [...inst.lines];
+    newLines[index] = { ...newLines[index], ...updates };
+
+    // Recalculate amount if quantity or price changed
+    if ('quantity' in updates || 'singlePrice' in updates) {
+      newLines[index].amount = newLines[index].quantity * newLines[index].singlePrice;
+    }
+
+    updateInstallment({ lines: newLines });
+  };
+
+  const addLine = () => {
+    const newLine: Line = {
+      number: inst.lines.length + 1,
+      description: '',
+      quantity: 1,
+      singlePrice: 0,
+      amount: 0,
+      tax: inst.taxSummary?.taxPercentage || 0,
+    };
+    updateInstallment({ lines: [...inst.lines, newLine] });
+  };
+
+  const removeLine = (index: number) => {
+    const newLines = inst.lines.filter((_, i) => i !== index);
+    // Renumber lines
+    newLines.forEach((line, i) => { line.number = i + 1; });
+    updateInstallment({ lines: newLines });
+  };
+
+  const updatePayment = (updates: Partial<NonNullable<typeof inst.payment>>) => {
+    updateInstallment({
+      payment: { ...inst.payment, amount: inst.payment?.amount || 0, ...updates },
+    });
+  };
+
+  const formatDate = (date: Date | undefined): string => {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
+  };
+
+  return (
+    <div className="card">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <FileText size={24} style={{ color: 'var(--accent-green)' }} />
+        <div style={{ flex: 1 }}>
+          <div className="card-title" style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
+            MODIFICA DATI FATTURA
+          </div>
+          <div style={{ fontSize: '0.9rem', fontFamily: 'Space Mono', color: 'var(--text-secondary)' }}>
+            {fileName}
+          </div>
+        </div>
+        <Check size={20} style={{ color: 'var(--accent-green)' }} />
+      </div>
+
+      {/* FORNITORE */}
+      <CollapsibleSection title="Fornitore (Cedente/Prestatore)" defaultOpen={false}>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Ragione Sociale</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicer.name || ''}
+              onChange={(e) => updateInvoicer({ name: e.target.value })}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">P.IVA / CF</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicer.vat || ''}
+              onChange={(e) => updateInvoicer({ vat: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Indirizzo</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicer.office?.address || ''}
+              onChange={(e) => updateInvoicerOffice({ address: e.target.value })}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">N. Civico</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicer.office?.number || ''}
+              onChange={(e) => updateInvoicerOffice({ number: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">CAP</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicer.office?.cap || ''}
+              onChange={(e) => updateInvoicerOffice({ cap: e.target.value })}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Città</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicer.office?.city || ''}
+              onChange={(e) => updateInvoicerOffice({ city: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Provincia</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicer.office?.district || ''}
+              onChange={(e) => updateInvoicerOffice({ district: e.target.value })}
+              maxLength={2}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Nazione</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicer.office?.country || ''}
+              onChange={(e) => updateInvoicerOffice({ country: e.target.value })}
+              maxLength={2}
+            />
+          </div>
+        </div>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Telefono</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicer.contacts?.tel || ''}
+              onChange={(e) => updateInvoicerContacts({ tel: e.target.value })}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Email</label>
+            <input
+              type="email"
+              className="input-field"
+              value={invoice.invoicer.contacts?.email || ''}
+              onChange={(e) => updateInvoicerContacts({ email: e.target.value })}
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
+
+      {/* CLIENTE */}
+      <CollapsibleSection title="Cliente (Cessionario/Committente)" defaultOpen={false}>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Ragione Sociale</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicee.name || ''}
+              onChange={(e) => updateInvoicee({ name: e.target.value })}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">P.IVA / CF</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicee.vat || ''}
+              onChange={(e) => updateInvoicee({ vat: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Indirizzo</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicee.office?.address || ''}
+              onChange={(e) => updateInvoiceeOffice({ address: e.target.value })}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">N. Civico</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicee.office?.number || ''}
+              onChange={(e) => updateInvoiceeOffice({ number: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">CAP</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicee.office?.cap || ''}
+              onChange={(e) => updateInvoiceeOffice({ cap: e.target.value })}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Città</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicee.office?.city || ''}
+              onChange={(e) => updateInvoiceeOffice({ city: e.target.value })}
+            />
+          </div>
+        </div>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Provincia</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicee.office?.district || ''}
+              onChange={(e) => updateInvoiceeOffice({ district: e.target.value })}
+              maxLength={2}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Nazione</label>
+            <input
+              type="text"
+              className="input-field"
+              value={invoice.invoicee.office?.country || ''}
+              onChange={(e) => updateInvoiceeOffice({ country: e.target.value })}
+              maxLength={2}
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
+
+      {/* DATI FATTURA */}
+      <CollapsibleSection title="Dati Fattura" defaultOpen={true}>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Numero Fattura</label>
+            <input
+              type="text"
+              className="input-field"
+              value={inst.number || ''}
+              onChange={(e) => updateInstallment({ number: e.target.value })}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Data Emissione</label>
+            <input
+              type="date"
+              className="input-field"
+              value={formatDate(inst.issueDate)}
+              onChange={(e) => updateInstallment({ issueDate: new Date(e.target.value) })}
+            />
+          </div>
+        </div>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Valuta</label>
+            <input
+              type="text"
+              className="input-field"
+              value={inst.currency || 'EUR'}
+              onChange={(e) => updateInstallment({ currency: e.target.value })}
+              maxLength={3}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Bollo (se presente)</label>
+            <input
+              type="number"
+              className="input-field"
+              value={inst.stampDuty || ''}
+              onChange={(e) => updateInstallment({ stampDuty: e.target.value ? parseFloat(e.target.value) : undefined })}
+              step="0.01"
+            />
+          </div>
+        </div>
+        <div className="input-group">
+          <label className="input-label">Causale / Descrizione</label>
+          <textarea
+            className="input-field"
+            value={inst.description || ''}
+            onChange={(e) => updateInstallment({ description: e.target.value })}
+            rows={2}
+            style={{ resize: 'vertical' }}
+          />
+        </div>
+      </CollapsibleSection>
+
+      {/* RIGHE FATTURA */}
+      <CollapsibleSection title={`Righe Fattura (${inst.lines.length})`} defaultOpen={true}>
+        {inst.lines.map((line, index) => (
+          <div
+            key={index}
+            style={{
+              background: 'var(--bg-secondary)',
+              borderRadius: 8,
+              padding: 16,
+              marginBottom: 12,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Riga {line.number}</span>
+              {inst.lines.length > 1 && (
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => removeLine(index)}
+                  style={{ padding: '4px 8px' }}
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
+            </div>
+            <div className="input-group">
+              <label className="input-label">Descrizione</label>
+              <textarea
+                className="input-field"
+                value={line.description}
+                onChange={(e) => updateLine(index, { description: e.target.value })}
+                rows={2}
+                style={{ resize: 'vertical' }}
+              />
+            </div>
+            <div className="grid-2" style={{ marginTop: 8 }}>
+              <div className="input-group">
+                <label className="input-label">Quantità</label>
+                <input
+                  type="number"
+                  className="input-field"
+                  value={line.quantity}
+                  onChange={(e) => updateLine(index, { quantity: parseFloat(e.target.value) || 0 })}
+                  step="0.01"
+                />
+              </div>
+              <div className="input-group">
+                <label className="input-label">Prezzo Unitario</label>
+                <input
+                  type="number"
+                  className="input-field"
+                  value={line.singlePrice}
+                  onChange={(e) => updateLine(index, { singlePrice: parseFloat(e.target.value) || 0 })}
+                  step="0.01"
+                />
+              </div>
+            </div>
+            <div className="grid-2" style={{ marginTop: 8 }}>
+              <div className="input-group">
+                <label className="input-label">IVA %</label>
+                <input
+                  type="number"
+                  className="input-field"
+                  value={line.tax}
+                  onChange={(e) => updateLine(index, { tax: parseFloat(e.target.value) || 0 })}
+                  step="0.01"
+                />
+              </div>
+              <div className="input-group">
+                <label className="input-label">Importo Riga</label>
+                <input
+                  type="number"
+                  className="input-field"
+                  value={line.amount.toFixed(2)}
+                  readOnly
+                  style={{ background: 'var(--bg-tertiary)', cursor: 'not-allowed' }}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+        <button className="btn btn-secondary" onClick={addLine} style={{ marginTop: 8 }}>
+          <Plus size={18} /> Aggiungi Riga
+        </button>
+      </CollapsibleSection>
+
+      {/* PAGAMENTO */}
+      <CollapsibleSection title="Dati Pagamento" defaultOpen={false}>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">Importo Totale</label>
+            <input
+              type="number"
+              className="input-field"
+              value={inst.totalAmount}
+              onChange={(e) => updateInstallment({ totalAmount: parseFloat(e.target.value) || 0 })}
+              step="0.01"
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Data Scadenza</label>
+            <input
+              type="date"
+              className="input-field"
+              value={formatDate(inst.payment?.regularPaymentDate)}
+              onChange={(e) => updatePayment({ regularPaymentDate: e.target.value ? new Date(e.target.value) : undefined })}
+            />
+          </div>
+        </div>
+        <div className="grid-2">
+          <div className="input-group">
+            <label className="input-label">IBAN</label>
+            <input
+              type="text"
+              className="input-field"
+              value={inst.payment?.iban || ''}
+              onChange={(e) => updatePayment({ iban: e.target.value })}
+            />
+          </div>
+          <div className="input-group">
+            <label className="input-label">Banca</label>
+            <input
+              type="text"
+              className="input-field"
+              value={inst.payment?.bank || ''}
+              onChange={(e) => updatePayment({ bank: e.target.value })}
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
+    </div>
   );
 }
