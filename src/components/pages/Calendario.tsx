@@ -20,6 +20,12 @@ const hexToRgba = (hex: string, alpha: number): string => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+// Helper to format numbers without trailing zeros (1.0 -> 1, 1.5 -> 1.5)
+const formatNumber = (num: number, maxDecimals: number = 2): string => {
+  const fixed = num.toFixed(maxDecimals);
+  return parseFloat(fixed).toString();
+};
+
 interface CalendarioProps {
   setShowModal: (modal: string | null) => void;
   setSelectedDate: (date: string) => void;
@@ -31,11 +37,11 @@ type ActivitySortField = 'data' | 'cliente' | 'durata';
 type SortDirection = 'asc' | 'desc';
 
 export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }: CalendarioProps) {
-  const { clienti, workLogs, removeWorkLog, updateWorkLog } = useApp();
+  const { clienti, workLogs, removeWorkLog, updateWorkLog, addWorkLog } = useApp();
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [recapSort, setRecapSort] = useState<{ field: RecapSortField; direction: SortDirection }>({ field: 'totale', direction: 'desc' });
   const [activitySort, setActivitySort] = useState<{ field: ActivitySortField; direction: SortDirection }>({ field: 'data', direction: 'desc' });
-  const [draggedWorkLog, setDraggedWorkLog] = useState<WorkLog | null>(null);
+  const [draggedWorkLog, setDraggedWorkLog] = useState<{ log: WorkLog; duplicate: boolean } | null>(null);
 
   const toggleRecapSort = (field: RecapSortField) => {
     setRecapSort(prev => ({
@@ -157,8 +163,14 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
                 onDrop={async (e) => {
                   e.preventDefault();
                   e.currentTarget.style.outline = '';
-                  if (draggedWorkLog && !day.otherMonth && draggedWorkLog.data !== dateStr) {
-                    await updateWorkLog({ ...draggedWorkLog, data: dateStr });
+                  if (draggedWorkLog && !day.otherMonth && draggedWorkLog.log.data !== dateStr) {
+                    if (draggedWorkLog.duplicate) {
+                      // ALT+drag: duplicate the work log
+                      await addWorkLog({ ...draggedWorkLog.log, id: Date.now().toString(), data: dateStr });
+                    } else {
+                      // Normal drag: move the work log
+                      await updateWorkLog({ ...draggedWorkLog.log, data: dateStr });
+                    }
                     setDraggedWorkLog(null);
                   }
                 }}
@@ -187,13 +199,13 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
                             e.stopPropagation();
                             const mainLog = logs[0];
                             if (mainLog) {
-                              setDraggedWorkLog(mainLog);
-                              e.dataTransfer.effectAllowed = 'move';
+                              setDraggedWorkLog({ log: mainLog, duplicate: e.altKey });
+                              e.dataTransfer.effectAllowed = e.altKey ? 'copy' : 'move';
                             }
                           }}
                           onDragEnd={() => setDraggedWorkLog(null)}
                         >
-                          {cliente.nome.substring(0, 10)}{cliente.nome.length > 10 ? '..' : ''} {total.toFixed(1)}{unit}
+                          {cliente.nome.substring(0, 10)}{cliente.nome.length > 10 ? '..' : ''} {formatNumber(total, 1)}{unit}
                         </div>
                       );
                     })}
@@ -249,7 +261,7 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
                   <td style={{ fontWeight: 500 }}>{cliente.nome}</td>
                   <td>
                     <span className="badge badge-green">
-                      {totalQuantita.toFixed(2)} {unit === 'ore' ? 'h' : 'gg'}
+                      {formatNumber(totalQuantita)} {unit === 'ore' ? 'h' : 'gg'}
                     </span>
                   </td>
                   <td style={{ fontFamily: 'Space Mono' }}>
