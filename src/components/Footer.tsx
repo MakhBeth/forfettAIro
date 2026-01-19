@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.mobileInfo}>
           <div className={styles.credits}>
-            Made by <a href="https://github.com/MakhBeth" target="_blank" rel="noopener noreferrer">MakhBeth</a> with AI
+            Made by <a href="https://github.com/MakhBeth" target="_blank" rel="noopener noreferrer">MakhBeth</a>
           </div>
           <div className={styles.privacy}>
             🔒 All data stays local

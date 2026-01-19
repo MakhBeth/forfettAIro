@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ title = 'ForfettAIro' }) => {
       <div className={styles.container}>
         <div className={styles.logo}>
           <h1 className={styles.logoText}>{title}</h1>
-          <p className={styles.logoSubtext}>Vibecoded Gestione P.IVA Semplificata</p>
+          <p className={styles.logoSubtext}>Gestione P.IVA Semplificata</p>
         </div>
         <nav className={styles.nav}>
           <a 

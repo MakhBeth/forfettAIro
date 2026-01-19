@@ -193,7 +193,7 @@ function ForfettarioAppInner() {
       <div className="app-container">
         <nav className="sidebar">
           <div className="logo">ForfettAIro</div>
-          <div className="logo-sub">Vibecoded Gestione P.IVA Semplificata</div>
+          <div className="logo-sub">Gestione P.IVA Semplificata</div>
 
           <nav className="nav-items" aria-label="Navigazione principale">
             <button type="button" className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentPage('dashboard')} aria-current={currentPage === 'dashboard' ? 'page' : undefined}>
@@ -224,7 +224,7 @@ function ForfettarioAppInner() {
 
           <div className="footer">
             <div className="footer-credits">
-              Made by <a href="https://github.com/MakhBeth" target="_blank" rel="noopener noreferrer" aria-label="MakhBeth (si apre in una nuova finestra)">MakhBeth</a> with AI
+              Made by <a href="https://github.com/MakhBeth" target="_blank" rel="noopener noreferrer" aria-label="MakhBeth (si apre in una nuova finestra)">MakhBeth</a>
             </div>
             <div className="footer-privacy">
               🔒 All data stays local
