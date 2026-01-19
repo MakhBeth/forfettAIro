@@ -192,7 +192,7 @@ function ForfettarioAppInner() {
       <a href="#main-content" className="skip-link">Salta al contenuto principale</a>
       <div className="app-container">
         <nav className="sidebar">
-          <div className="logo">ForfettAIro</div>
+          <div className="logo">Forfettino</div>
           <div className="logo-sub">Gestione P.IVA Semplificata</div>
 
           <nav className="nav-items" aria-label="Navigazione principale">
@@ -230,7 +230,7 @@ function ForfettarioAppInner() {
               🔒 All data stays local
             </div>
             <div className="footer-link">
-              <a href="https://github.com/MakhBeth/forfettAIro" target="_blank" rel="noopener noreferrer" lang="en" aria-label="View on GitHub (opens in a new window)">
+              <a href="https://github.com/MakhBeth/forfettino" target="_blank" rel="noopener noreferrer" lang="en" aria-label="View on GitHub (opens in a new window)">
                 <Github size={16} aria-hidden="true" /> View on GitHub
               </a>
             </div>

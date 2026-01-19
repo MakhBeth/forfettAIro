@@ -386,7 +386,7 @@ export function FatturaCortesia() {
                 className="input-field"
                 value={footerText}
                 onChange={(e) => setFooterText(e.target.value)}
-                placeholder="ForfettAIro"
+                placeholder="Forfettino"
               />
             </div>
             <div className="input-group">
@@ -396,7 +396,7 @@ export function FatturaCortesia() {
                 className="input-field"
                 value={footerLink}
                 onChange={(e) => setFooterLink(e.target.value)}
-                placeholder="https://github.com/MakhBeth/forfettAIro"
+                placeholder="https://github.com/MakhBeth/forfettino"
               />
             </div>
           </div>

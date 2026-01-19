@@ -485,9 +485,9 @@ const GeneratePDF = (invoice: Invoice, options: PDFOptions) => {
                   {t.generatedBy}{' '}
                   <Link
                     style={{ color: colors.primary }}
-                    src={options.footerLink || 'https://github.com/MakhBeth/forfettAIro'}
+                    src={options.footerLink || 'https://github.com/MakhBeth/forfettino'}
                   >
-                    {options.footerText || 'ForfettAIro'}
+                    {options.footerText || 'Forfettino'}
                   </Link>
                 </Text>
               </View>

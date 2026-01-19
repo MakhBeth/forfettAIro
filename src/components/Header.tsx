@@ -6,7 +6,7 @@ interface HeaderProps {
   title?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ title = 'ForfettAIro' }) => {
+const Header: React.FC<HeaderProps> = ({ title = 'Forfettino' }) => {
   return (
     <header className={styles.header}>
       <div className={styles.container}>
@@ -16,7 +16,7 @@ const Header: React.FC<HeaderProps> = ({ title = 'ForfettAIro' }) => {
         </div>
         <nav className={styles.nav}>
           <a 
-            href="https://github.com/MakhBeth/forfettAIro" 
+            href="https://github.com/MakhBeth/forfettino" 
             target="_blank" 
             rel="noopener noreferrer"
             className={styles.githubLink}

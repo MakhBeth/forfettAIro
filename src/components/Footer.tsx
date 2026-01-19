@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
           <div className={styles.privacy}>
             🔒 All data stays local
           </div>
-          <a href="https://github.com/MakhBeth/forfettAIro" target="_blank" rel="noopener noreferrer" className={styles.githubLink}>
+          <a href="https://github.com/MakhBeth/forfettino" target="_blank" rel="noopener noreferrer" className={styles.githubLink}>
             <Github size={14} /> View on GitHub
           </a>
         </div>

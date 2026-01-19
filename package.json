@@ -1,6 +1,6 @@
 {
-  "name": "forfettario-app",
-  "version": "1.5.14",
+  "name": "forfettino",
+  "version": "2.0.0",
   "description": "App per gestire il regime forfettario - P.IVA italiana",
   "type": "module",
   "scripts": {

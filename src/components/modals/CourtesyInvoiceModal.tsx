@@ -772,7 +772,7 @@ function OptionsEditor({
               style={{ width: 20, height: 20 }}
             />
             <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-              "Generato con ForfettAIro"
+              "Generato con Forfettino"
             </span>
           </div>
         </div>

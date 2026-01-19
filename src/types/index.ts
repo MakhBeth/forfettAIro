@@ -1,4 +1,4 @@
-// Type definitions for ForfettAIro
+// Type definitions for Forfettino
 
 export type StoreName = 'config' | 'clienti' | 'fatture' | 'workLogs';
 
