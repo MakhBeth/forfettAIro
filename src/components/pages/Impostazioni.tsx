@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Download, Upload, Database, Plus, X, Edit, Trash2, Users, Palette, Building, FolderSync, RefreshCw, FolderOpen, AlertCircle } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import type { Cliente, EmittenteConfig } from '../../types';
@@ -9,11 +9,7 @@ import {
   isFileSystemAccessSupported,
   getUnsupportedBrowserMessage,
   selectSyncFolder,
-  getStoredDirectoryHandle,
   clearStoredDirectoryHandle,
-  verifyPermission,
-  writeSyncFile,
-  readSyncFile,
   getFolderName
 } from '../../lib/utils/fileSystemSync';
 
@@ -28,32 +24,23 @@ interface ImpostazioniProps {
 }
 
 export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: ImpostazioniProps) {
-  const { config, clienti, removeCliente, setConfig, showToast, importData } = useApp();
+  const {
+    config,
+    clienti,
+    removeCliente,
+    setConfig,
+    showToast,
+    syncFolderHandle,
+    syncFolderName,
+    isSyncing,
+    lastSyncTime,
+    syncToFolder,
+    setSyncFolderHandle,
+    setSyncFolderName,
+    setLastSyncTime
+  } = useApp();
   const [newAteco, setNewAteco] = useState<string>('');
-
-  // Sync folder state
-  const [syncFolderHandle, setSyncFolderHandle] = useState<FileSystemDirectoryHandle | null>(null);
-  const [syncFolderName, setSyncFolderName] = useState<string | null>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [showUnsupportedMessage, setShowUnsupportedMessage] = useState(false);
-
-  // Restore saved directory handle on mount
-  useEffect(() => {
-    async function restoreHandle() {
-      if (!isFileSystemAccessSupported()) return;
-
-      const handle = await getStoredDirectoryHandle();
-      if (handle) {
-        const hasPermission = await verifyPermission(handle);
-        if (hasPermission) {
-          setSyncFolderHandle(handle);
-          setSyncFolderName(getFolderName(handle));
-        }
-      }
-    }
-    restoreHandle();
-  }, []);
 
   const handleSelectSyncFolder = async () => {
     if (!isFileSystemAccessSupported()) {
@@ -67,6 +54,8 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
         setSyncFolderHandle(handle);
         setSyncFolderName(getFolderName(handle));
         showToast('Cartella di sincronizzazione selezionata!');
+        // Trigger initial sync
+        syncToFolder();
       }
     } catch (err) {
       showToast('Errore nella selezione della cartella', 'error');
@@ -79,46 +68,6 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
     setSyncFolderName(null);
     setLastSyncTime(null);
     showToast('Cartella di sincronizzazione rimossa');
-  };
-
-  const handleSyncNow = async () => {
-    if (!syncFolderHandle) return;
-
-    setIsSyncing(true);
-    try {
-      // First, try to read existing data from the sync folder
-      const remoteData = await readSyncFile(syncFolderHandle);
-
-      if (remoteData) {
-        // Import the remote data
-        await importData(remoteData);
-        showToast('Dati sincronizzati dalla cartella!');
-      }
-
-      // Then export current data to the sync folder
-      const { dbManager } = await import('../../lib/db/IndexedDBManager');
-      const localData = await dbManager.exportAll();
-      await writeSyncFile(syncFolderHandle, localData);
-
-      setLastSyncTime(new Date());
-      if (!remoteData) {
-        showToast('Dati esportati nella cartella di sync!');
-      }
-    } catch (err: any) {
-      // Check if permission was revoked
-      if (err.name === 'NotAllowedError') {
-        const hasPermission = await verifyPermission(syncFolderHandle);
-        if (!hasPermission) {
-          showToast('Permesso negato. Riseleziona la cartella.', 'error');
-          setSyncFolderHandle(null);
-          setSyncFolderName(null);
-          return;
-        }
-      }
-      showToast('Errore durante la sincronizzazione', 'error');
-    } finally {
-      setIsSyncing(false);
-    }
   };
 
   const annoCorrente = new Date().getFullYear();
@@ -449,7 +398,7 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
             <div className="backup-section">
               <button
                 className="btn btn-primary"
-                onClick={handleSyncNow}
+                onClick={syncToFolder}
                 disabled={isSyncing}
               >
                 <RefreshCw size={18} className={isSyncing ? 'spinning' : ''} aria-hidden="true" />

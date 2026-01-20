@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useCallback, ReactNode, useEffect, useRef } from 'react';
 import type { Config, Cliente, Fattura, WorkLog, Toast } from '../types';
 import { useDatabase } from '../hooks/useDatabase';
 import { useToast } from '../hooks/useToast';
@@ -6,6 +6,7 @@ import { useConfig } from '../hooks/useConfig';
 import { useClienti } from '../hooks/useClienti';
 import { useFatture } from '../hooks/useFatture';
 import { useWorkLogs } from '../hooks/useWorkLogs';
+import { useFolderSync } from '../hooks/useFolderSync';
 
 // Define the context value interface
 interface AppContextValue {
@@ -46,6 +47,16 @@ interface AppContextValue {
   // Import/Export
   exportData: () => Promise<void>;
   importData: (data: Record<string, any[]>) => Promise<void>;
+
+  // Folder Sync
+  syncFolderHandle: FileSystemDirectoryHandle | null;
+  syncFolderName: string | null;
+  isSyncing: boolean;
+  lastSyncTime: Date | null;
+  syncToFolder: () => Promise<void>;
+  setSyncFolderHandle: (handle: FileSystemDirectoryHandle | null) => void;
+  setSyncFolderName: (name: string | null) => void;
+  setLastSyncTime: (time: Date | null) => void;
 }
 
 // Create the context
@@ -60,6 +71,63 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { clienti, setClienti, addCliente, updateCliente, removeCliente } = useClienti(dbManager, dbReady);
   const { fatture, setFatture, addFattura, updateFattura, removeFattura } = useFatture(dbManager, dbReady);
   const { workLogs, setWorkLogs, addWorkLog, updateWorkLog, removeWorkLog } = useWorkLogs(dbManager, dbReady);
+
+  // Refs to hold setters for folder sync callback
+  const setConfigRef = useRef(setConfig);
+  const setClientiRef = useRef(setClienti);
+  const setFattureRef = useRef(setFatture);
+  const setWorkLogsRef = useRef(setWorkLogs);
+
+  useEffect(() => {
+    setConfigRef.current = setConfig;
+    setClientiRef.current = setClienti;
+    setFattureRef.current = setFatture;
+    setWorkLogsRef.current = setWorkLogs;
+  }, [setConfig, setClienti, setFatture, setWorkLogs]);
+
+  // Folder sync with load on startup
+  const handleDataLoaded = useCallback(async (data: Record<string, any[]>) => {
+    // Import data into IndexedDB first
+    await dbManager.importAll(data);
+    // Then update state
+    if (data.config?.[0]) setConfigRef.current(data.config[0]);
+    if (data.clienti) setClientiRef.current(data.clienti);
+    if (data.fatture) setFattureRef.current(data.fatture);
+    if (data.workLogs) setWorkLogsRef.current(data.workLogs);
+  }, [dbManager]);
+
+  const {
+    syncFolderHandle,
+    syncFolderName,
+    isSyncing,
+    lastSyncTime,
+    isInitialLoadDone,
+    syncToFolder,
+    setSyncFolderHandle,
+    setSyncFolderName,
+    setLastSyncTime
+  } = useFolderSync({
+    dbManager,
+    dbReady,
+    onDataLoaded: handleDataLoaded
+  });
+
+  // Track previous values to detect changes
+  const prevDataRef = useRef<string>('');
+
+  // Auto-sync when data changes
+  useEffect(() => {
+    if (!isInitialLoadDone || !syncFolderHandle) return;
+
+    // Create a simple hash of current data to detect changes
+    const currentData = JSON.stringify({ config, clienti, fatture, workLogs });
+
+    if (prevDataRef.current && prevDataRef.current !== currentData) {
+      syncToFolder();
+    }
+
+    prevDataRef.current = currentData;
+  }, [config, clienti, fatture, workLogs, isInitialLoadDone, syncFolderHandle, syncToFolder]);
 
   // Export/Import handlers
   const exportData = useCallback(async () => {
@@ -134,7 +202,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     updateWorkLog,
     removeWorkLog,
     exportData,
-    importData
+    importData,
+    syncFolderHandle,
+    syncFolderName,
+    isSyncing,
+    lastSyncTime,
+    syncToFolder,
+    setSyncFolderHandle,
+    setSyncFolderName,
+    setLastSyncTime
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
