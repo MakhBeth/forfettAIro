@@ -40,3 +40,7 @@ lerna-debug.log*
 
 # Claude Code
 .claude/
+
+# Ralph
+.ralph/
+ralph
