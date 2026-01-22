@@ -147,6 +147,17 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
   const totalYearVacationDays = yearVacationDates.length;
   const yearVacationDaysExcludingWeekends = yearVacationDates.filter(date => !isWeekend(date)).length;
 
+  // Calculate yearly worked days (excluding vacation, only past days)
+  const yearWorkedDates = Array.from(new Set(
+    workLogs
+      .filter(log => {
+        const logDate = new Date(log.data);
+        return log.clienteId !== VACATION_CLIENT_ID && logDate >= yearStart && logDate <= yearEnd && logDate <= todayDate;
+      })
+      .map(log => log.data)
+  ));
+  const totalYearWorkedDays = yearWorkedDates.length;
+
   return (
     <>
       <div className="page-header">
@@ -489,6 +500,12 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
             {currentMonth.getFullYear()} Yearly Summary
           </h3>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 120, padding: 12, background: 'var(--bg-secondary)', borderRadius: 8, textAlign: 'center' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--accent-green)' }}>
+                {totalYearWorkedDays}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 4 }}>Worked days</div>
+            </div>
             <div style={{ flex: 1, minWidth: 120, padding: 12, background: 'var(--bg-secondary)', borderRadius: 8, textAlign: 'center' }}>
               <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#f59e0b' }}>
                 {excludeWeekends ? yearVacationDaysExcludingWeekends : totalYearVacationDays}
