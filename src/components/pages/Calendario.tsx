@@ -45,6 +45,7 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
   const [activitySort, setActivitySort] = useState<{ field: ActivitySortField; direction: SortDirection }>({ field: 'data', direction: 'desc' });
   const [draggedWorkLog, setDraggedWorkLog] = useState<{ log: WorkLog; duplicate: boolean } | null>(null);
   const [vacationMode, setVacationMode] = useState(false);
+  const [excludeWeekends, setExcludeWeekends] = useState(false);
 
   const toggleRecapSort = (field: RecapSortField) => {
     setRecapSort(prev => ({
@@ -95,6 +96,13 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
     })
     .filter(item => item !== null);
 
+  // Helper to check if a date is a weekend
+  const isWeekend = (dateStr: string): boolean => {
+    const date = new Date(dateStr);
+    const day = date.getDay();
+    return day === 0 || day === 6;
+  };
+
   // Calculate worked and vacation days for the month summary
   const monthWorkLogs = workLogs.filter(log => {
     const logDate = new Date(log.data);
@@ -108,19 +116,36 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
       .map(log => log.data)
   );
 
-  // Get unique vacation dates
-  const vacationDates = new Set(
+  // Get unique vacation dates for the month
+  const monthVacationDates = Array.from(new Set(
     monthWorkLogs
       .filter(log => log.clienteId === VACATION_CLIENT_ID)
       .map(log => log.data)
-  );
+  ));
 
   // Only count past days for worked days summary
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
 
   const pastWorkedDays = Array.from(workedDates).filter(date => new Date(date) <= todayDate).length;
-  const totalVacationDays = vacationDates.size;
+  const totalMonthVacationDays = monthVacationDates.length;
+  const monthVacationDaysExcludingWeekends = monthVacationDates.filter(date => !isWeekend(date)).length;
+
+  // Calculate yearly vacation days
+  const yearStart = new Date(currentMonth.getFullYear(), 0, 1);
+  const yearEnd = new Date(currentMonth.getFullYear(), 11, 31);
+
+  const yearVacationDates = Array.from(new Set(
+    workLogs
+      .filter(log => {
+        const logDate = new Date(log.data);
+        return log.clienteId === VACATION_CLIENT_ID && logDate >= yearStart && logDate <= yearEnd;
+      })
+      .map(log => log.data)
+  ));
+
+  const totalYearVacationDays = yearVacationDates.length;
+  const yearVacationDaysExcludingWeekends = yearVacationDates.filter(date => !isWeekend(date)).length;
 
   return (
     <>
@@ -433,15 +458,43 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
 
       {/* Monthly Summary - Worked Days & Vacation Days */}
       <div className="card" style={{ marginTop: 24 }}>
-        <h2 className="card-title">Monthly Summary</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <h2 className="card-title" style={{ margin: 0 }}>Monthly Summary</h2>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={excludeWeekends}
+              onChange={(e) => setExcludeWeekends(e.target.checked)}
+              style={{ width: 16, height: 16, cursor: 'pointer' }}
+            />
+            Exclude weekends
+          </label>
+        </div>
         <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: 150, padding: 16, background: 'var(--bg-secondary)', borderRadius: 8, textAlign: 'center' }}>
             <div style={{ fontSize: '2rem', fontWeight: 600, color: 'var(--accent-green)' }}>{pastWorkedDays}</div>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: 4 }}>Worked days</div>
           </div>
           <div style={{ flex: 1, minWidth: 150, padding: 16, background: 'var(--bg-secondary)', borderRadius: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', fontWeight: 600, color: '#f59e0b' }}>{totalVacationDays}</div>
+            <div style={{ fontSize: '2rem', fontWeight: 600, color: '#f59e0b' }}>
+              {excludeWeekends ? monthVacationDaysExcludingWeekends : totalMonthVacationDays}
+            </div>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: 4 }}>🏖️ Vacation days</div>
+          </div>
+        </div>
+
+        {/* Yearly Summary - smaller, at the bottom */}
+        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--border-color)' }}>
+          <h3 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 12 }}>
+            {currentMonth.getFullYear()} Yearly Summary
+          </h3>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 120, padding: 12, background: 'var(--bg-secondary)', borderRadius: 8, textAlign: 'center' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#f59e0b' }}>
+                {excludeWeekends ? yearVacationDaysExcludingWeekends : totalYearVacationDays}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: 4 }}>🏖️ Vacation days</div>
+            </div>
           </div>
         </div>
       </div>
