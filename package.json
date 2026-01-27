@@ -2,6 +2,7 @@
   "name": "forfettino",
   "version": "2.3.0",
   "description": "App per gestire il regime forfettario - P.IVA italiana",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",

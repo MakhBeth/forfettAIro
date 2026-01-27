@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useRef, useEffect, useCallback } from "react";
 import {
   Settings,
   FileText,
@@ -10,6 +10,7 @@ import {
   FilePlus,
   CalendarClock,
   Calculator,
+  MoreHorizontal,
 } from "lucide-react";
 import { AppProvider, useApp } from "../context/AppContext";
 import { Toast } from "./shared/Toast";
@@ -174,6 +175,103 @@ function ForfettarioAppInner() {
   const [selectedScadenzeDate, setSelectedScadenzeDate] = useState<
     string | null
   >(null);
+
+  // Mobile "Altro" menu state
+  const [isAltroMenuOpen, setIsAltroMenuOpen] = useState(false);
+  const altroMenuRef = useRef<HTMLDivElement>(null);
+  const altroButtonRef = useRef<HTMLButtonElement>(null);
+  const altroMenuItemsRef = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!isAltroMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        altroMenuRef.current &&
+        !altroMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsAltroMenuOpen(false);
+        altroButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isAltroMenuOpen]);
+
+  // Focus trap and keyboard navigation for Altro menu
+  const handleAltroKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (!isAltroMenuOpen) return;
+
+      const items = altroMenuItemsRef.current.filter(Boolean) as HTMLButtonElement[];
+      const currentIndex = items.findIndex(
+        (item) => item === document.activeElement
+      );
+
+      switch (event.key) {
+        case "Escape":
+          event.preventDefault();
+          setIsAltroMenuOpen(false);
+          altroButtonRef.current?.focus();
+          break;
+        case "ArrowUp":
+          event.preventDefault();
+          if (currentIndex > 0) {
+            items[currentIndex - 1].focus();
+          } else {
+            items[items.length - 1].focus();
+          }
+          break;
+        case "ArrowDown":
+          event.preventDefault();
+          if (currentIndex < items.length - 1) {
+            items[currentIndex + 1].focus();
+          } else {
+            items[0].focus();
+          }
+          break;
+        case "Tab":
+          // Focus trap
+          if (event.shiftKey && currentIndex === 0) {
+            event.preventDefault();
+            items[items.length - 1].focus();
+          } else if (!event.shiftKey && currentIndex === items.length - 1) {
+            event.preventDefault();
+            items[0].focus();
+          }
+          break;
+        case "Home":
+          event.preventDefault();
+          items[0]?.focus();
+          break;
+        case "End":
+          event.preventDefault();
+          items[items.length - 1]?.focus();
+          break;
+      }
+    },
+    [isAltroMenuOpen]
+  );
+
+  // Focus first item when menu opens
+  useEffect(() => {
+    if (isAltroMenuOpen) {
+      // Small delay to ensure DOM is ready
+      requestAnimationFrame(() => {
+        altroMenuItemsRef.current[0]?.focus();
+      });
+    }
+  }, [isAltroMenuOpen]);
+
+  const handleAltroItemClick = (page: string) => {
+    setCurrentPage(page);
+    setIsAltroMenuOpen(false);
+  };
+
+  // Check if current page is in the "Altro" menu
+  const isAltroPageActive = ["fattura-cortesia", "scadenze", "simulatore"].includes(currentPage);
 
   // Upload handlers
   const handleFatturaUpload = async (file: File) => {
@@ -364,9 +462,10 @@ function ForfettarioAppInner() {
             >
               <Calendar size={20} aria-hidden="true" /> Calendario
             </button>
+            {/* Desktop only: show all items */}
             <button
               type="button"
-              className={`nav-item ${currentPage === "fattura-cortesia" ? "active" : ""}`}
+              className={`nav-item nav-item-desktop ${currentPage === "fattura-cortesia" ? "active" : ""}`}
               onClick={() => setCurrentPage("fattura-cortesia")}
               aria-current={
                 currentPage === "fattura-cortesia" ? "page" : undefined
@@ -376,7 +475,7 @@ function ForfettarioAppInner() {
             </button>
             <button
               type="button"
-              className={`nav-item ${currentPage === "scadenze" ? "active" : ""}`}
+              className={`nav-item nav-item-desktop ${currentPage === "scadenze" ? "active" : ""}`}
               onClick={() => setCurrentPage("scadenze")}
               aria-current={currentPage === "scadenze" ? "page" : undefined}
             >
@@ -384,12 +483,71 @@ function ForfettarioAppInner() {
             </button>
             <button
               type="button"
-              className={`nav-item ${currentPage === "simulatore" ? "active" : ""}`}
+              className={`nav-item nav-item-desktop ${currentPage === "simulatore" ? "active" : ""}`}
               onClick={() => setCurrentPage("simulatore")}
               aria-current={currentPage === "simulatore" ? "page" : undefined}
             >
               <Calculator size={20} aria-hidden="true" /> Simulatore
             </button>
+            {/* Mobile only: Altro dropup menu */}
+            <div
+              className="nav-item-altro-wrapper"
+              ref={altroMenuRef}
+              onKeyDown={handleAltroKeyDown}
+            >
+              <button
+                ref={altroButtonRef}
+                type="button"
+                className={`nav-item nav-item-mobile ${isAltroPageActive ? "active" : ""}`}
+                onClick={() => setIsAltroMenuOpen(!isAltroMenuOpen)}
+                aria-expanded={isAltroMenuOpen}
+                aria-controls="altro-menu"
+                aria-haspopup="menu"
+              >
+                <MoreHorizontal size={20} aria-hidden="true" /> Altro
+              </button>
+              <div
+                id="altro-menu"
+                className={`altro-dropup-menu ${isAltroMenuOpen ? "open" : ""}`}
+                role="menu"
+                aria-label="Menu Altro"
+                aria-hidden={!isAltroMenuOpen}
+              >
+                <button
+                  ref={(el) => { altroMenuItemsRef.current[0] = el; }}
+                  type="button"
+                  className={`altro-menu-item ${currentPage === "fattura-cortesia" ? "active" : ""}`}
+                  onClick={() => handleAltroItemClick("fattura-cortesia")}
+                  role="menuitem"
+                  tabIndex={isAltroMenuOpen ? 0 : -1}
+                  aria-current={currentPage === "fattura-cortesia" ? "page" : undefined}
+                >
+                  <FilePlus size={18} aria-hidden="true" /> Fattura di Cortesia
+                </button>
+                <button
+                  ref={(el) => { altroMenuItemsRef.current[1] = el; }}
+                  type="button"
+                  className={`altro-menu-item ${currentPage === "scadenze" ? "active" : ""}`}
+                  onClick={() => handleAltroItemClick("scadenze")}
+                  role="menuitem"
+                  tabIndex={isAltroMenuOpen ? 0 : -1}
+                  aria-current={currentPage === "scadenze" ? "page" : undefined}
+                >
+                  <CalendarClock size={18} aria-hidden="true" /> Scadenze
+                </button>
+                <button
+                  ref={(el) => { altroMenuItemsRef.current[2] = el; }}
+                  type="button"
+                  className={`altro-menu-item ${currentPage === "simulatore" ? "active" : ""}`}
+                  onClick={() => handleAltroItemClick("simulatore")}
+                  role="menuitem"
+                  tabIndex={isAltroMenuOpen ? 0 : -1}
+                  aria-current={currentPage === "simulatore" ? "page" : undefined}
+                >
+                  <Calculator size={18} aria-hidden="true" /> Simulatore
+                </button>
+              </div>
+            </div>
             <button
               type="button"
               className={`nav-item ${currentPage === "impostazioni" ? "active" : ""}`}

@@ -87,6 +87,12 @@ export function Simulatore() {
           }}
         >
           <div style={{ flex: 1, minWidth: 200 }}>
+            <label
+              htmlFor="fatturato-input"
+              className="input-label"
+            >
+              Inserisci fatturato
+            </label>
             <div style={{ position: "relative" }}>
               <span
                 style={{
@@ -102,10 +108,11 @@ export function Simulatore() {
                 &euro;
               </span>
               <input
+                id="fatturato-input"
                 type="text"
                 inputMode="decimal"
                 className="input-field"
-                placeholder="Inserisci fatturato"
+                placeholder="es. 50000"
                 value={fatturato}
                 onChange={(e) => setFatturato(e.target.value)}
                 style={{
@@ -114,7 +121,6 @@ export function Simulatore() {
                   fontFamily: "Space Mono, monospace",
                   fontWeight: 700,
                 }}
-                aria-label="Fatturato stimato in euro"
               />
             </div>
           </div>
