@@ -3,6 +3,7 @@ import { Users, Clock, AlertTriangle } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { LIMITE_FATTURATO, INPS_GESTIONE_SEPARATA, ALIQUOTA_RIDOTTA, ALIQUOTA_STANDARD, MAX_HISTORICAL_YEARS, COEFFICIENTI_ATECO } from '../../lib/constants/fiscali';
 import { getWorkLogQuantita } from '../../lib/utils/calculations';
+import { formatCurrency } from '../../lib/utils/formatting';
 
 // Accessible patterns for colorblind users
 const PATTERNS = [
@@ -242,7 +243,7 @@ function VerticalBarChart({ data }: { data: { mese: string; totale: number }[] }
         }}>
           <div style={{ fontWeight: 600, textTransform: 'capitalize' }}>{data[hoveredIndex].mese}</div>
           <div style={{ color: 'var(--accent-green)', fontFamily: 'Space Mono' }}>
-            €{data[hoveredIndex].totale.toLocaleString('it-IT')}
+            €{formatCurrency(data[hoveredIndex].totale)}
           </div>
         </div>
       )}
@@ -436,7 +437,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
       <div className="grid-4">
         <div className="card">
           <h2 className="card-title">Fatturato Anno</h2>
-          <div className="stat-value" style={{ color: 'var(--accent-green)' }}>€{totaleFatturato.toLocaleString('it-IT')}</div>
+          <div className="stat-value" style={{ color: 'var(--accent-green)' }}>€{formatCurrency(totaleFatturato)}</div>
           <div className="stat-label">{fattureAnnoCorrente.length} fatture incassate</div>
         </div>
 
@@ -448,12 +449,12 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${Math.min(percentualeLimite, 100)}%`, background: percentualeLimite > 90 ? 'var(--accent-red)' : percentualeLimite > 70 ? 'var(--accent-orange)' : 'var(--accent-green)' }} />
           </div>
-          <div className="stat-label">Rimangono €{rimanenteLimite.toLocaleString('it-IT')}</div>
+          <div className="stat-label">Rimangono €{formatCurrency(rimanenteLimite)}</div>
         </div>
 
         <div className="card">
           <h2 className="card-title">IRPEF da accantonare</h2>
-          <div className="stat-value" style={{ color: 'var(--accent-orange)' }}>€{irpefDovuta.toLocaleString('it-IT', { maximumFractionDigits: 0 })}</div>
+          <div className="stat-value" style={{ color: 'var(--accent-orange)' }}>€{formatCurrency(irpefDovuta)}</div>
           <div className="stat-label">
             Aliquota {(aliquotaIrpef * 100).toFixed(2)}%
             {config.aliquotaOverride !== null && ' (custom)'}
@@ -463,7 +464,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
 
         <div className="card">
           <h2 className="card-title">INPS da accantonare</h2>
-          <div className="stat-value" style={{ color: 'var(--accent-orange)' }}>€{inpsDovuta.toLocaleString('it-IT', { maximumFractionDigits: 0 })}</div>
+          <div className="stat-value" style={{ color: 'var(--accent-orange)' }}>€{formatCurrency(inpsDovuta)}</div>
           <div className="stat-label">Gestione Separata 26.07%</div>
         </div>
       </div>
@@ -472,8 +473,8 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
         <div className="grid-3" style={{ alignItems: 'center' }}>
           <div>
             <h2 className="card-title">Totale da Accantonare</h2>
-            <div className="stat-value" style={{ fontSize: '2.8rem' }}>€{totaleTasse.toLocaleString('it-IT', { maximumFractionDigits: 0 })}</div>
-            <div className="stat-label">Reddito imponibile €{redditoImponibile.toLocaleString('it-IT', { maximumFractionDigits: 0 })} (coeff. {coefficienteMedio}%)</div>
+            <div className="stat-value" style={{ fontSize: '2.8rem' }}>€{formatCurrency(totaleTasse)}</div>
+            <div className="stat-label">Reddito imponibile €{formatCurrency(redditoImponibile)} (coeff. {coefficienteMedio}%)</div>
           </div>
           <div style={{ textAlign: 'center' }}>
             {percentualeLimite > 90 && (
@@ -486,7 +487,7 @@ export function Dashboard({ annoSelezionato, setAnnoSelezionato }: DashboardProp
           <div style={{ textAlign: 'right' }}>
             <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Netto stimato</div>
             <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent-green)' }}>
-              €{(totaleFatturato - totaleTasse).toLocaleString('it-IT', { maximumFractionDigits: 0 })}
+              €{formatCurrency(totaleFatturato - totaleTasse)}
             </div>
           </div>
         </div>
