@@ -51,7 +51,8 @@ export function useScadenze(dbManager: IndexedDBManager, dbReady: boolean) {
 
   const removeScadenzeByYear = useCallback(async (annoVersamento: number) => {
     try {
-      const toRemove = scadenze.filter(s => s.annoVersamento === annoVersamento);
+      const allScadenze: Scadenza[] = await dbManager.getAll('scadenze');
+      const toRemove = allScadenze.filter(s => s.annoVersamento === annoVersamento);
       for (const s of toRemove) {
         await dbManager.delete('scadenze', s.id);
       }
@@ -60,7 +61,7 @@ export function useScadenze(dbManager: IndexedDBManager, dbReady: boolean) {
       console.error('Errore eliminazione scadenze per anno:', error);
       throw error;
     }
-  }, [dbManager, scadenze]);
+  }, [dbManager]);
 
   const bulkSaveScadenze = useCallback(async (newScadenze: Scadenza[]) => {
     try {

@@ -26,7 +26,7 @@ export function CalendarDayModal({
   initialTab = 'lavoro',
 }: CalendarDayModalProps) {
   const { dialogRef, handleClick } = useDialog(isOpen, onClose);
-  const { scadenze, updateScadenza } = useApp();
+  const { scadenze, updateScadenza, showToast } = useApp();
   const [activeTab, setActiveTab] = useState<'lavoro' | 'scadenze'>(initialTab);
 
   useEffect(() => {
@@ -48,11 +48,17 @@ export function CalendarDayModal({
   };
 
   const handleTogglePaid = async (scadenza: Scadenza) => {
-    await updateScadenza({
-      ...scadenza,
-      pagato: !scadenza.pagato,
-      dataPagamento: !scadenza.pagato ? new Date().toISOString().split('T')[0] : undefined,
-    });
+    const nextPagato = !scadenza.pagato;
+    try {
+      await updateScadenza({
+        ...scadenza,
+        pagato: nextPagato,
+        dataPagamento: nextPagato ? new Date().toISOString().split('T')[0] : undefined,
+      });
+    } catch (error) {
+      console.error('Failed to update scadenza:', error);
+      showToast('Errore durante l\'aggiornamento della scadenza', 'error');
+    }
   };
 
   const getTipoLabel = (tipo: string) => {

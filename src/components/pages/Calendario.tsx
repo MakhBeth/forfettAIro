@@ -260,13 +260,14 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog, s
 
             const primaryClient = clientData[0]?.cliente;
             const primaryColor = primaryClient ? getClientDisplayColor(primaryClient, primaryClient.id) : null;
-            const scadenzaColor = hasScadenze ? (dayScadenze.every(s => s.pagato) ? 'var(--accent-green)' : 'var(--accent-red)') : null;
+            const scadenzaColorVar = hasScadenze ? (dayScadenze.every(s => s.pagato) ? 'var(--accent-green)' : 'var(--accent-red)') : null;
+            const scadenzaColorHex = hasScadenze ? (dayScadenze.every(s => s.pagato) ? '#047857' : '#dc2626') : null;
 
             return (
               <div
                 key={i}
                 className={`calendar-day ${day.otherMonth ? 'other-month' : ''} ${dateStr === today ? 'today' : ''} ${isWeekendDay ? 'weekend' : ''} ${hasWork ? 'has-work' : ''} ${draggedWorkLog ? 'drop-target' : ''} ${vacationMode ? 'vacation-mode' : ''}`}
-                style={hasScadenze && !hasWork ? { backgroundColor: hexToRgba(scadenzaColor === 'var(--accent-green)' ? '#047857' : '#dc2626', 0.1) } : (hasWork && primaryColor ? { backgroundColor: hexToRgba(primaryColor, 0.1) } : undefined)}
+                style={hasScadenze && !hasWork && scadenzaColorHex ? { backgroundColor: hexToRgba(scadenzaColorHex, 0.1) } : (hasWork && primaryColor ? { backgroundColor: hexToRgba(primaryColor, 0.1) } : undefined)}
                 onClick={async () => {
                   if (!day.otherMonth && !draggedWorkLog) {
                     if (vacationMode) {
@@ -325,7 +326,7 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog, s
                 {(hasWork || hasScadenze) && (
                   <div style={{ position: 'absolute', top: 4, right: 4, display: 'flex', gap: 2 }} aria-hidden="true">
                     {hasScadenze && (
-                      <CalendarClock size={10} style={{ color: dayScadenze.every(s => s.pagato) ? 'var(--accent-green)' : 'var(--accent-red)' }} />
+                      <CalendarClock size={10} style={{ color: scadenzaColorVar ?? undefined }} />
                     )}
                     {clientData.map(({ cliente }) => (
                       <div key={cliente.id} style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: getClientDisplayColor(cliente, cliente.id) }} />
@@ -343,7 +344,7 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog, s
                       return (
                         <div
                           style={{ 
-                            color: allPaid ? 'var(--accent-green)' : 'var(--accent-red)', 
+                            color: scadenzaColorVar ?? undefined, 
                             fontSize: '0.6rem', 
                             whiteSpace: 'nowrap', 
                             overflow: 'hidden', 

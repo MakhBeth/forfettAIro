@@ -1,4 +1,5 @@
-import { X, Check, CalendarClock } from 'lucide-react';
+import { useState } from 'react';
+import { X, Check, CalendarClock, Loader2 } from 'lucide-react';
 import { useDialog } from '../../hooks/useDialog';
 import { useApp } from '../../context/AppContext';
 import { parseDateLocal } from '../../lib/utils/dateHelpers';
@@ -12,7 +13,8 @@ interface ScadenzaDetailModalProps {
 
 export function ScadenzaDetailModal({ isOpen, onClose, selectedDate }: ScadenzaDetailModalProps) {
   const { dialogRef, handleClick } = useDialog(isOpen, onClose);
-  const { scadenze, updateScadenza } = useApp();
+  const { scadenze, updateScadenza, showToast } = useApp();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   if (!isOpen || !selectedDate) return null;
 
@@ -169,17 +171,43 @@ export function ScadenzaDetailModal({ isOpen, onClose, selectedDate }: ScadenzaD
         <button 
           className="btn btn-primary" 
           style={{ width: '100%' }}
+          disabled={isProcessing}
           onClick={async () => {
-            for (const s of dayScadenze.filter(s => !s.pagato)) {
-              await updateScadenza({
-                ...s,
-                pagato: true,
-                dataPagamento: new Date().toISOString().split('T')[0],
-              });
+            setIsProcessing(true);
+            const unpaid = dayScadenze.filter(s => !s.pagato);
+            const dataPagamento = new Date().toISOString().split('T')[0];
+            const failedIds: string[] = [];
+
+            for (const s of unpaid) {
+              try {
+                await updateScadenza({
+                  ...s,
+                  pagato: true,
+                  dataPagamento,
+                });
+              } catch {
+                failedIds.push(s.id);
+              }
             }
+
+            if (failedIds.length > 0) {
+              showToast(
+                failedIds.length === unpaid.length
+                  ? 'Errore: nessuna scadenza aggiornata'
+                  : `Errore su ${failedIds.length}/${unpaid.length} scadenze (ID: ${failedIds.join(', ')})`,
+                'error'
+              );
+            } else {
+              showToast('Tutte le scadenze segnate come pagate');
+            }
+
+            setIsProcessing(false);
           }}
         >
-          <Check size={18} /> Segna tutte come pagate
+          {isProcessing
+            ? <><Loader2 size={18} className="spinning" /> Elaborazione...</>
+            : <><Check size={18} /> Segna tutte come pagate</>
+          }
         </button>
       )}
     </dialog>
