@@ -213,6 +213,8 @@ export function CalendarDayModal({
               >
                 <button
                   onClick={() => handleTogglePaid(scadenza)}
+                  aria-label={scadenza.pagato ? `Segna come non pagato: ${scadenza.label}` : `Segna come pagato: ${scadenza.label}`}
+                  aria-pressed={scadenza.pagato}
                   style={{
                     width: 28,
                     height: 28,

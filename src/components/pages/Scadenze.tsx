@@ -3,6 +3,7 @@ import { CalendarClock, Euro, Percent, Info, Save, RefreshCw, Check } from 'luci
 import { useApp } from '../../context/AppContext';
 import { INPS_GESTIONE_SEPARATA, ALIQUOTA_RIDOTTA, ALIQUOTA_STANDARD, COEFFICIENTI_ATECO } from '../../lib/constants/fiscali';
 import { generatePaymentSchedule, calculateScheduleTotals } from '../../lib/utils/paymentScheduler';
+import { parseDateLocal, formatDateLong } from '../../lib/utils/dateHelpers';
 import type { PaymentScheduleInput, PaymentScheduleItem, Scadenza, ScadenzaTipo } from '../../types';
 
 type NumberOfTranches = 1 | 2 | 3 | 4 | 5 | 6;
@@ -108,7 +109,7 @@ export function Scadenze() {
     };
   }, [irpefTotale, inpsTotale, parsedAccontiIrpef, parsedAccontiInps]);
 
-  const scheduleInput: PaymentScheduleInput = {
+  const scheduleInput: PaymentScheduleInput = useMemo(() => ({
     totalTaxSaldo: taxAmounts.taxSaldo,
     totalTax1stAcconto: taxAmounts.tax1stAcconto,
     totalTax2ndAcconto: taxAmounts.tax2ndAcconto,
@@ -117,7 +118,7 @@ export function Scadenze() {
     totalInps2ndAcconto: taxAmounts.inps2ndAcconto,
     numberOfTranches,
     fiscalYear: annoVersamento,
-  };
+  }), [taxAmounts, numberOfTranches, annoVersamento]);
 
   const schedule = useMemo(() => generatePaymentSchedule(scheduleInput), [scheduleInput]);
   const totals = useMemo(() => calculateScheduleTotals(schedule), [schedule]);
@@ -126,13 +127,8 @@ export function Scadenze() {
     return value.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  const formatDateLong = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' });
-  };
-
   const isUpcoming = (dateStr: string) => {
-    const date = new Date(dateStr);
+    const date = parseDateLocal(dateStr);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const thirtyDaysFromNow = new Date(today);
@@ -141,11 +137,13 @@ export function Scadenze() {
   };
 
   const isPast = (dateStr: string) => {
-    const date = new Date(dateStr);
+    const date = parseDateLocal(dateStr);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return date < today;
   };
+
+  const round2 = (v: number) => Math.round(v * 100) / 100;
 
   const convertScheduleToScadenze = (scheduleItems: PaymentScheduleItem[], accontiIrpef: number, accontiInps: number): Scadenza[] => {
     const result: Scadenza[] = [];
@@ -157,7 +155,33 @@ export function Scadenze() {
       const trancheIndex = trancheMatch ? parseInt(trancheMatch[1]) - 1 : 0;
       const totalTranches = trancheMatch ? parseInt(trancheMatch[2]) : 1;
 
+      // Compute interest shares for each active component, rounded to 2 decimals.
+      // The last active component absorbs the rounding remainder so the sum
+      // of per-component interest equals item.interestAmount exactly.
+      const activeComponents: { key: string; principal: number }[] = [];
+      if (item.components.taxSaldo > 0) activeComponents.push({ key: 'taxSaldo', principal: item.components.taxSaldo });
+      if (item.components.taxAcconto > 0) activeComponents.push({ key: 'taxAcconto', principal: item.components.taxAcconto });
+      if (item.components.inpsSaldo > 0) activeComponents.push({ key: 'inpsSaldo', principal: item.components.inpsSaldo });
+      if (item.components.inpsAcconto > 0) activeComponents.push({ key: 'inpsAcconto', principal: item.components.inpsAcconto });
+
+      const interestByKey: Record<string, number> = {};
+      if (item.principalAmount > 0 && item.interestAmount > 0 && activeComponents.length > 0) {
+        let allocated = 0;
+        for (let ci = 0; ci < activeComponents.length; ci++) {
+          const comp = activeComponents[ci];
+          if (ci === activeComponents.length - 1) {
+            // Last component gets the remainder to avoid cent drift
+            interestByKey[comp.key] = round2(item.interestAmount - allocated);
+          } else {
+            const share = round2(item.interestAmount * (comp.principal / item.principalAmount));
+            interestByKey[comp.key] = share;
+            allocated = round2(allocated + share);
+          }
+        }
+      }
+
       if (item.components.taxSaldo > 0) {
+        const interessi = interestByKey['taxSaldo'] ?? 0;
         result.push({
           id: `${idCounter++}`,
           visibleId: `${annoVersamento}-saldo-irpef-${trancheIndex}`,
@@ -167,8 +191,8 @@ export function Scadenze() {
           tipo: 'saldo_irpef',
           label: isSummerBundle && totalTranches > 1 ? `Saldo IRPEF (${trancheIndex + 1}/${totalTranches})` : 'Saldo IRPEF',
           importo: item.components.taxSaldo,
-          interessi: item.interestAmount * (item.components.taxSaldo / item.principalAmount),
-          totale: item.components.taxSaldo + item.interestAmount * (item.components.taxSaldo / item.principalAmount),
+          interessi,
+          totale: round2(item.components.taxSaldo + interessi),
           pagato: false,
           trancheIndex,
           totalTranches,
@@ -179,6 +203,7 @@ export function Scadenze() {
 
       if (item.components.taxAcconto > 0) {
         const isSecondAcconto = item.label.includes('Secondo');
+        const interessi = interestByKey['taxAcconto'] ?? 0;
         result.push({
           id: `${idCounter++}`,
           visibleId: `${annoVersamento}-acconto-irpef-${isSecondAcconto ? '2' : '1'}-${trancheIndex}`,
@@ -190,8 +215,8 @@ export function Scadenze() {
             ? 'Secondo Acconto IRPEF' 
             : (isSummerBundle && totalTranches > 1 ? `Primo Acconto IRPEF (${trancheIndex + 1}/${totalTranches})` : 'Primo Acconto IRPEF'),
           importo: item.components.taxAcconto,
-          interessi: item.interestAmount * (item.components.taxAcconto / item.principalAmount),
-          totale: item.components.taxAcconto + item.interestAmount * (item.components.taxAcconto / item.principalAmount),
+          interessi,
+          totale: round2(item.components.taxAcconto + interessi),
           pagato: false,
           trancheIndex: isSecondAcconto ? 0 : trancheIndex,
           totalTranches: isSecondAcconto ? 1 : totalTranches,
@@ -201,6 +226,7 @@ export function Scadenze() {
       }
 
       if (item.components.inpsSaldo > 0) {
+        const interessi = interestByKey['inpsSaldo'] ?? 0;
         result.push({
           id: `${idCounter++}`,
           visibleId: `${annoVersamento}-saldo-inps-${trancheIndex}`,
@@ -210,8 +236,8 @@ export function Scadenze() {
           tipo: 'saldo_inps',
           label: isSummerBundle && totalTranches > 1 ? `Saldo INPS (${trancheIndex + 1}/${totalTranches})` : 'Saldo INPS',
           importo: item.components.inpsSaldo,
-          interessi: item.interestAmount * (item.components.inpsSaldo / item.principalAmount),
-          totale: item.components.inpsSaldo + item.interestAmount * (item.components.inpsSaldo / item.principalAmount),
+          interessi,
+          totale: round2(item.components.inpsSaldo + interessi),
           pagato: false,
           trancheIndex,
           totalTranches,
@@ -222,6 +248,7 @@ export function Scadenze() {
 
       if (item.components.inpsAcconto > 0) {
         const isSecondAcconto = item.label.includes('Secondo');
+        const interessi = interestByKey['inpsAcconto'] ?? 0;
         result.push({
           id: `${idCounter++}`,
           visibleId: `${annoVersamento}-acconto-inps-${isSecondAcconto ? '2' : '1'}-${trancheIndex}`,
@@ -233,8 +260,8 @@ export function Scadenze() {
             ? 'Secondo Acconto INPS' 
             : (isSummerBundle && totalTranches > 1 ? `Primo Acconto INPS (${trancheIndex + 1}/${totalTranches})` : 'Primo Acconto INPS'),
           importo: item.components.inpsAcconto,
-          interessi: item.interestAmount * (item.components.inpsAcconto / item.principalAmount),
-          totale: item.components.inpsAcconto + item.interestAmount * (item.components.inpsAcconto / item.principalAmount),
+          interessi,
+          totale: round2(item.components.inpsAcconto + interessi),
           pagato: false,
           trancheIndex: isSecondAcconto ? 0 : trancheIndex,
           totalTranches: isSecondAcconto ? 1 : totalTranches,
@@ -578,6 +605,8 @@ export function Scadenze() {
                         <td>
                           <button
                             onClick={() => handleTogglePaid(scadenza)}
+                            aria-label={scadenza.pagato ? `Segna come non pagato: ${scadenza.label}` : `Segna come pagato: ${scadenza.label}`}
+                            aria-pressed={scadenza.pagato}
                             style={{
                               width: 28,
                               height: 28,

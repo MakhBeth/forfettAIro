@@ -81,7 +81,7 @@ export const generatePaymentSchedule = (input: PaymentScheduleInput): PaymentSch
 
   for (let i = 0; i < numberOfTranches; i++) {
     const deadline = getTrancheDeadline(fiscalYear, i);
-    const adjustedDeadline = i === 0 ? adjustForWeekend(deadline) : deadline;
+    const adjustedDeadline = adjustForWeekend(deadline);
     
     const monthsFromFirst = i;
     const interestRate = monthsFromFirst * INTERESSE_RATEIZZAZIONE_MENSILE;
@@ -113,7 +113,7 @@ export const generatePaymentSchedule = (input: PaymentScheduleInput): PaymentSch
   const novemberTotal = totalTax2ndAcconto + totalInps2ndAcconto;
   if (novemberTotal > 0) {
     schedule.push({
-      date: formatDate(new Date(fiscalYear, 10, GIORNO_SCADENZA_SALDO)),
+      date: formatDate(adjustForWeekend(new Date(fiscalYear, 10, GIORNO_SCADENZA_SALDO))),
       label: 'Secondo Acconto IRPEF e INPS',
       principalAmount: roundToTwoDecimals(novemberTotal),
       interestAmount: 0,

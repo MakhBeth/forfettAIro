@@ -1,6 +1,7 @@
 import { X, Check, CalendarClock } from 'lucide-react';
 import { useDialog } from '../../hooks/useDialog';
 import { useApp } from '../../context/AppContext';
+import { parseDateLocal } from '../../lib/utils/dateHelpers';
 import type { Scadenza } from '../../types';
 
 interface ScadenzaDetailModalProps {
@@ -23,9 +24,8 @@ export function ScadenzaDetailModal({ isOpen, onClose, selectedDate }: ScadenzaD
     return value.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  const formatDateLong = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const formatDateFull = (dateStr: string) => {
+    return parseDateLocal(dateStr).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   };
 
   const handleTogglePaid = async (scadenza: Scadenza) => {
@@ -66,7 +66,7 @@ export function ScadenzaDetailModal({ isOpen, onClose, selectedDate }: ScadenzaD
       <div style={{ padding: 12, background: 'var(--bg-secondary)', borderRadius: 8, marginBottom: 20, textAlign: 'center' }}>
         <CalendarClock size={20} style={{ marginBottom: 4, color: allPaid ? 'var(--accent-green)' : 'var(--accent-red)' }} />
         <div style={{ fontWeight: 500, textTransform: 'capitalize' }}>
-          {formatDateLong(selectedDate)}
+          {formatDateFull(selectedDate)}
         </div>
       </div>
 
@@ -130,7 +130,7 @@ export function ScadenzaDetailModal({ isOpen, onClose, selectedDate }: ScadenzaD
               )}
               {scadenza.pagato && scadenza.dataPagamento && (
                 <div style={{ fontSize: '0.75rem', color: 'var(--accent-green)' }}>
-                  Pagato il {new Date(scadenza.dataPagamento).toLocaleDateString('it-IT')}
+                  Pagato il {parseDateLocal(scadenza.dataPagamento).toLocaleDateString('it-IT')}
                 </div>
               )}
             </div>
