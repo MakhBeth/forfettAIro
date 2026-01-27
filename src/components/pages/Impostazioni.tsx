@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext';
 import type { Cliente, EmittenteConfig } from '../../types';
 import { COEFFICIENTI_ATECO } from '../../lib/constants/fiscali';
 import { ThemeSwitch } from '../shared/ThemeSwitch';
+import { DesignStyleSwitch } from '../shared/DesignStyleSwitch';
 import { getClientColor } from '../../lib/utils/colorUtils';
 import {
   isFileSystemAccessSupported,
@@ -361,7 +362,16 @@ export function Impostazioni({ setShowModal, setEditingCliente, handleExport }: 
       {/* Aspetto */}
       <div className="card">
         <h2 className="card-title"><Palette size={16} aria-hidden="true" style={{ display: 'inline', marginRight: 8, verticalAlign: 'middle' }} />Aspetto</h2>
-        <ThemeSwitch />
+
+        <div style={{ marginBottom: 20 }}>
+          <label className="input-label">Modalità colore</label>
+          <ThemeSwitch />
+        </div>
+
+        <div>
+          <label className="input-label">Tema</label>
+          <DesignStyleSwitch />
+        </div>
       </div>
 
       {/* Sincronizzazione Cartella */}

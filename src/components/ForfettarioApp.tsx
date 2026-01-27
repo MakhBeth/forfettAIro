@@ -3,6 +3,7 @@ import { Settings, FileText, LayoutDashboard, Calendar, Download, Upload, Github
 import { AppProvider, useApp } from '../context/AppContext';
 import { Toast } from './shared/Toast';
 import { LoadingSpinner } from './shared/LoadingSpinner';
+import { useDesignStyle } from './shared/DesignStyleSwitch';
 import { parseFatturaXML, extractXmlFromZip } from '../lib/utils/xmlParsing';
 import { processBatchXmlFiles } from '../lib/utils/batchImport';
 import { extractEmittenteFromXml, autoPopulateConfig } from '../lib/utils/configAutoPopulate';
@@ -33,6 +34,9 @@ const NuovaFatturaModal = lazy(() => import('./modals/NuovaFatturaModal').then(m
 
 function ForfettarioAppInner() {
   const { toast, exportData, importData, clienti, fatture, showToast, addCliente, addFattura, addWorkLog, updateCliente, updateFattura, updateWorkLog, config, setConfig } = useApp();
+
+  // Initialize design style on app load
+  useDesignStyle();
 
   const [currentPage, setCurrentPage] = useState<string>('dashboard');
   const [showModal, setShowModal] = useState<string | null>(null);

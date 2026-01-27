@@ -1,0 +1,284 @@
+/**
+ * NEOMORPHISM (New Age) Theme
+ * Soft, extruded plastic-like UI with subtle inner/outer shadows
+ */
+
+/* Variables - only apply when data-design="newage" */
+html[data-design="newage"],
+html[data-design="newage"][data-theme="dark"] {
+  --bg-primary: #1a1f1e;
+  --bg-secondary: #1a1f1e;
+  --bg-card: #1a1f1e;
+  --bg-hover: #222827;
+  --neo-shadow-dark: #121615;
+  --neo-shadow-light: #222928;
+  --accent-primary: #047857;
+  --accent-secondary: #059669;
+  --accent-green: #16a34a;
+  --accent-orange: #f59e0b;
+  --accent-red: #ef4444;
+  --text-primary: #e0e5e4;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border: transparent;
+}
+
+html[data-design="newage"][data-theme="light"] {
+  --bg-primary: #e0e5e3;
+  --bg-secondary: #e0e5e3;
+  --bg-card: #e0e5e3;
+  --bg-hover: #d0d5d3;
+  --neo-shadow-dark: #bebebe;
+  --neo-shadow-light: #ffffff;
+  --accent-primary: #047857;
+  --accent-secondary: #065f46;
+  --accent-green: #15803d;
+  --accent-orange: #c2410c;
+  --accent-red: #b91c1c;
+  --text-primary: #1a1f1e;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border: transparent;
+}
+
+/* Neomorphic Cards - raised effect (subtle) */
+html[data-design="newage"] .card {
+  background: var(--bg-card);
+  border: none;
+  border-radius: 24px;
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow:
+    4px 4px 10px var(--neo-shadow-dark),
+    -4px -4px 10px var(--neo-shadow-light);
+  transition: box-shadow 0.3s ease;
+}
+
+html[data-design="newage"] .card:hover {
+  box-shadow:
+    6px 6px 14px var(--neo-shadow-dark),
+    -6px -6px 14px var(--neo-shadow-light);
+}
+
+/* Neomorphic Buttons - raised (subtle) */
+html[data-design="newage"] .btn {
+  background: var(--bg-card);
+  border: none;
+  border-radius: 12px;
+  color: var(--text-primary);
+  box-shadow:
+    3px 3px 6px var(--neo-shadow-dark),
+    -3px -3px 6px var(--neo-shadow-light);
+  transition: all 0.2s ease;
+}
+
+html[data-design="newage"] .btn:hover {
+  box-shadow:
+    2px 2px 4px var(--neo-shadow-dark),
+    -2px -2px 4px var(--neo-shadow-light);
+}
+
+html[data-design="newage"] .btn:active {
+  box-shadow:
+    inset 3px 3px 6px var(--neo-shadow-dark),
+    inset -3px -3px 6px var(--neo-shadow-light);
+}
+
+html[data-design="newage"] .btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+html[data-design="newage"] .btn-primary {
+  background: var(--accent-primary);
+  color: white;
+  box-shadow:
+    4px 4px 8px var(--neo-shadow-dark),
+    -4px -4px 8px var(--neo-shadow-light),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+html[data-design="newage"] .btn-primary:hover {
+  background: var(--accent-secondary);
+}
+
+/* Neomorphic Input Fields - inset effect (subtle) */
+html[data-design="newage"] .input-field {
+  background: var(--bg-card);
+  border: none;
+  border-radius: 12px;
+  box-shadow:
+    inset 2px 2px 5px var(--neo-shadow-dark),
+    inset -2px -2px 5px var(--neo-shadow-light);
+  transition: box-shadow 0.2s ease;
+}
+
+html[data-design="newage"] .input-field:focus {
+  outline: none;
+  box-shadow:
+    inset 3px 3px 6px var(--neo-shadow-dark),
+    inset -3px -3px 6px var(--neo-shadow-light);
+}
+
+/* Neomorphic Progress Bar */
+html[data-design="newage"] .progress-bar {
+  background: var(--bg-card);
+  border-radius: 8px;
+  box-shadow:
+    inset 3px 3px 6px var(--neo-shadow-dark),
+    inset -3px -3px 6px var(--neo-shadow-light);
+  height: 12px;
+}
+
+html[data-design="newage"] .progress-fill {
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px var(--neo-shadow-dark);
+}
+
+/* Neomorphic Nav Items */
+html[data-design="newage"] .nav-item {
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+html[data-design="newage"] .nav-item:hover {
+  background: var(--bg-card);
+  box-shadow:
+    4px 4px 8px var(--neo-shadow-dark),
+    -4px -4px 8px var(--neo-shadow-light);
+}
+
+html[data-design="newage"] .nav-item.active {
+  background: var(--bg-card);
+  color: var(--accent-primary);
+  box-shadow:
+    inset 4px 4px 8px var(--neo-shadow-dark),
+    inset -4px -4px 8px var(--neo-shadow-light);
+}
+
+/* Neomorphic Stat Values - subtle raised text */
+html[data-design="newage"] .stat-value {
+  text-shadow:
+    1px 1px 2px var(--neo-shadow-dark),
+    -1px -1px 2px var(--neo-shadow-light);
+}
+
+/* Neomorphic Sidebar */
+html[data-design="newage"] .sidebar {
+  background: var(--bg-secondary);
+  border-right: none;
+  box-shadow: 4px 0 12px var(--neo-shadow-dark);
+}
+
+html[data-design="newage"] .sidebar .nav-items {
+  margin-bottom: 24px;
+}
+
+/* Neomorphic Table */
+html[data-design="newage"] .table th {
+  border-bottom: none;
+  padding-bottom: 16px;
+}
+
+html[data-design="newage"] .table td {
+  border-bottom: none;
+}
+
+html[data-design="newage"] .table tr {
+  border-radius: 12px;
+}
+
+html[data-design="newage"] .table tr:hover {
+  background: transparent;
+  box-shadow:
+    inset 4px 4px 8px var(--neo-shadow-dark),
+    inset -4px -4px 8px var(--neo-shadow-light);
+}
+
+/* Neomorphic Badges */
+html[data-design="newage"] .badge {
+  box-shadow:
+    2px 2px 4px var(--neo-shadow-dark),
+    -2px -2px 4px var(--neo-shadow-light);
+  border-radius: 12px;
+}
+
+/* Neomorphic Modal */
+html[data-design="newage"] dialog.modal {
+  background: var(--bg-card);
+  border: none;
+  border-radius: 28px;
+  box-shadow:
+    10px 10px 25px var(--neo-shadow-dark),
+    -10px -10px 25px var(--neo-shadow-light);
+}
+
+/* Neomorphic Upload Zone */
+html[data-design="newage"] .upload-zone {
+  border: none;
+  background: var(--bg-card);
+  box-shadow:
+    inset 6px 6px 12px var(--neo-shadow-dark),
+    inset -6px -6px 12px var(--neo-shadow-light);
+}
+
+html[data-design="newage"] .upload-zone:hover {
+  background: var(--bg-card);
+  box-shadow:
+    inset 8px 8px 16px var(--neo-shadow-dark),
+    inset -8px -8px 16px var(--neo-shadow-light);
+}
+
+/* Neomorphic Calendar Days */
+html[data-design="newage"] .calendar-day {
+  background: var(--bg-card);
+  border: none;
+  border-radius: 12px;
+  box-shadow:
+    2px 2px 5px var(--neo-shadow-dark),
+    -2px -2px 5px var(--neo-shadow-light);
+}
+
+html[data-design="newage"] .calendar-day:hover {
+  box-shadow:
+    inset 2px 2px 5px var(--neo-shadow-dark),
+    inset -2px -2px 5px var(--neo-shadow-light);
+}
+
+html[data-design="newage"] .calendar-day.today {
+  border: none;
+  box-shadow:
+    2px 2px 5px var(--neo-shadow-dark),
+    -2px -2px 5px var(--neo-shadow-light),
+    inset 0 0 0 2px var(--accent-primary);
+}
+
+/* Neomorphic Toast */
+html[data-design="newage"] .toast {
+  background: var(--bg-card);
+  border: none;
+  box-shadow:
+    4px 4px 10px var(--neo-shadow-dark),
+    -4px -4px 10px var(--neo-shadow-light);
+}
+
+/* Neomorphic Theme Switch */
+html[data-design="newage"] .theme-switch {
+  background: var(--bg-card);
+  border: none;
+  box-shadow:
+    inset 4px 4px 8px var(--neo-shadow-dark),
+    inset -4px -4px 8px var(--neo-shadow-light);
+}
+
+html[data-design="newage"] .theme-switch-btn {
+  border-radius: 8px;
+}
+
+html[data-design="newage"] .theme-switch-btn.active {
+  background: var(--bg-card);
+  color: var(--accent-primary);
+  box-shadow:
+    4px 4px 8px var(--neo-shadow-dark),
+    -4px -4px 8px var(--neo-shadow-light);
+}
