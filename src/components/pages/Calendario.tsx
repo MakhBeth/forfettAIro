@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { getCalendarDays, formatDate } from '../../lib/utils/dateHelpers';
 import { getClientColor } from '../../lib/utils/colorUtils';
 import { getWorkLogQuantita } from '../../lib/utils/calculations';
-import { formatCurrency } from '../../lib/utils/formatting';
+import { Currency } from '../ui/Currency';
 import type { Cliente, WorkLog } from '../../types';
 import { VACATION_CLIENT_ID } from '../../types';
 
@@ -400,18 +400,18 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
                       {formatNumber(totalQuantita)} {unit === 'ore' ? 'h' : 'gg'}
                     </span>
                   </td>
-                  <td style={{ fontFamily: 'Space Mono' }}>
-                    {cliente.rate ? `€${formatCurrency(cliente.rate)}/${unit === 'ore' ? 'h' : 'gg'}` : '-'}
+                  <td>
+                    {cliente.rate ? <><Currency amount={cliente.rate} />/{unit === 'ore' ? 'h' : 'gg'}</> : '-'}
                   </td>
-                  <td style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--accent-green)' }}>
-                    {amount !== null ? `€${formatCurrency(amount)}` : '-'}
+                  <td style={{ fontWeight: 600, color: 'var(--accent-green)' }}>
+                    {amount !== null ? <Currency amount={amount} /> : '-'}
                   </td>
                 </tr>
               ))}
               <tr style={{ background: 'var(--bg-hover)', fontWeight: 600 }}>
                 <td colSpan={3} style={{ textAlign: 'right' }}>Totale Mese</td>
-                <td style={{ fontFamily: 'Space Mono', fontSize: '1.1rem', color: 'var(--accent-green)' }}>
-                  €{formatCurrency(recapData.reduce((sum, item) => sum + (item.amount || 0), 0))}
+                <td style={{ fontSize: '1.1rem', color: 'var(--accent-green)' }}>
+                  <Currency amount={recapData.reduce((sum, item) => sum + (item.amount || 0), 0)} />
                 </td>
               </tr>
             </tbody>
@@ -445,8 +445,8 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                     {formatNumber(totalQuantita)} {unit === 'ore' ? 'h' : 'gg'}
                   </span>
-                  <span style={{ fontFamily: 'Space Mono', fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent-green)' }}>
-                    {amount !== null ? `€${formatCurrency(amount)}` : '-'}
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent-green)' }}>
+                    {amount !== null ? <Currency amount={amount} /> : '-'}
                   </span>
                 </div>
               </div>
@@ -454,8 +454,8 @@ export function Calendario({ setShowModal, setSelectedDate, setEditingWorkLog }:
           </div>
           <div style={{ marginTop: 12, textAlign: 'right', fontSize: '0.85rem' }}>
             <span style={{ color: 'var(--text-secondary)' }}>Totale Anno: </span>
-            <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--accent-green)' }}>
-              €{formatCurrency(yearlyRecapData.reduce((sum, item) => sum + (item.amount || 0), 0))}
+            <span style={{ fontWeight: 600, color: 'var(--accent-green)' }}>
+              <Currency amount={yearlyRecapData.reduce((sum, item) => sum + (item.amount || 0), 0)} />
             </span>
           </div>
         </div>

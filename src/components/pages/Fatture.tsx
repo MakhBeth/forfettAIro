@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Upload, FileText, Trash2, Edit, FileArchive, FilePlus, Landmark, ChevronDown } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { Currency } from '../ui/Currency';
 import type { Fattura } from '../../types';
 
 interface FattureProps {
@@ -231,7 +232,7 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
                       </div>
                     </td>
                     <td>{f.clienteNome || clienti.find(c => c.id === f.clienteId)?.nome || '-'}</td>
-                    <td style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>€{f.importo.toLocaleString('it-IT')}</td>
+                    <td style={{ fontWeight: 600 }}><Currency amount={f.importo} /></td>
                     <td><button className="btn btn-danger" onClick={() => removeFattura(f.id)} aria-label="Elimina fattura"><Trash2 size={16} aria-hidden="true" /></button></td>
                   </tr>
                 );
@@ -251,7 +252,7 @@ export function FatturePage({ setShowModal, setEditingFattura }: FattureProps) {
             {fatturatoPerCliente.filter(c => c.totale > 0).map(c => (
               <div key={c.id} style={{ padding: 16, background: 'var(--bg-secondary)', borderRadius: 12 }}>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>{c.nome}</div>
-                <div style={{ fontFamily: 'Space Mono', fontSize: '1.3rem', color: 'var(--accent-green)' }}>€{c.totale.toLocaleString('it-IT')}</div>
+                <div style={{ fontSize: '1.3rem', color: 'var(--accent-green)' }}><Currency amount={c.totale} /></div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{c.count} fatture</div>
               </div>
             ))}
