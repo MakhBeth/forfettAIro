@@ -9,5 +9,6 @@ export const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('it-IT', {
     minimumFractionDigits: hasDecimals ? 2 : 0,
     maximumFractionDigits: hasDecimals ? 2 : 0,
+    useGrouping: true,
   }).format(amount);
 };
