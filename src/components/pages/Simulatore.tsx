@@ -210,7 +210,6 @@ export function Simulatore() {
                   style={{
                     width: "fit-content",
                     minWidth: "4ch",
-                    maxWidth: "8ch",
                     fieldSizing: "content",
                     padding: "6px 28px 6px 10px",
                     fontSize: "1rem",
@@ -242,7 +241,6 @@ export function Simulatore() {
                   style={{
                     width: "fit-content",
                     minWidth: "3ch",
-                    maxWidth: "6ch",
                     fieldSizing: "content",
                     padding: "6px 28px 6px 10px",
                     fontSize: "1rem",
@@ -275,7 +273,6 @@ export function Simulatore() {
                   style={{
                     width: "fit-content",
                     minWidth: "5ch",
-                    maxWidth: "8ch",
                     fieldSizing: "content",
                     padding: "6px 28px 6px 10px",
                     fontSize: "1rem",
