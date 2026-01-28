@@ -25,14 +25,14 @@ export function Simulatore() {
   const anniAttivita = annoCorrente - config.annoApertura;
   const aliquotaIrpefBase =
     anniAttivita < 5 ? ALIQUOTA_RIDOTTA : ALIQUOTA_STANDARD;
-  const aliquotaIrpef =
+  const aliquotaIrpefDefault =
     config.aliquotaOverride !== null &&
     config.aliquotaOverride >= 0 &&
     config.aliquotaOverride <= 100
       ? config.aliquotaOverride / 100
       : aliquotaIrpefBase;
 
-  const coefficienteMedio = useMemo(() => {
+  const coefficienteDefault = useMemo(() => {
     if (config.codiciAteco.length === 0) return COEFFICIENTI_ATECO.default;
     return (
       config.codiciAteco.reduce((sum, code) => {
@@ -42,12 +42,28 @@ export function Simulatore() {
     );
   }, [config.codiciAteco]);
 
+  // Stati per valori editabili con default dai calcoli
+  const [coefficienteCustom, setCoefficienteCustom] = useState<string>("");
+  const [aliquotaIrpefCustom, setAliquotaIrpefCustom] = useState<string>("");
+  const [inpsCustom, setInpsCustom] = useState<string>("");
+
+  // Valori effettivi usati nei calcoli
+  const coefficienteMedio = coefficienteCustom !== ""
+    ? parseFloat(coefficienteCustom) || coefficienteDefault
+    : coefficienteDefault;
+  const aliquotaIrpef = aliquotaIrpefCustom !== ""
+    ? (parseFloat(aliquotaIrpefCustom) || 0) / 100
+    : aliquotaIrpefDefault;
+  const aliquotaInps = inpsCustom !== ""
+    ? (parseFloat(inpsCustom) || 0) / 100
+    : INPS_GESTIONE_SEPARATA;
+
   const fatturatoNum = parseCurrency(fatturato);
 
   const calculations = useMemo(() => {
     const imponibile = fatturatoNum * (coefficienteMedio / 100);
     const irpef = imponibile * aliquotaIrpef;
-    const inps = imponibile * INPS_GESTIONE_SEPARATA;
+    const inps = imponibile * aliquotaInps;
     const totaleTasse = irpef + inps;
     const nettoStimato = fatturatoNum - totaleTasse;
     const percentualeNetto =
@@ -63,7 +79,7 @@ export function Simulatore() {
       percentualeNetto,
       percentualeLimite,
     };
-  }, [fatturatoNum, coefficienteMedio, aliquotaIrpef]);
+  }, [fatturatoNum, coefficienteMedio, aliquotaIrpef, aliquotaInps]);
 
   const isOverLimit = fatturatoNum > LIMITE_FATTURATO;
 
@@ -181,35 +197,89 @@ export function Simulatore() {
             color: "var(--text-secondary)",
           }}
         >
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px 32px" }}>
-            <div>
-              <span style={{ color: "var(--text-muted)" }}>Coefficiente: </span>
-              <strong>{coefficienteMedio}%</strong>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px 24px", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <label htmlFor="coefficiente-input" style={{ color: "var(--text-muted)" }}>Coefficiente:</label>
+              <div style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+                <input
+                  id="coefficiente-input"
+                  type="text"
+                  inputMode="decimal"
+                  value={coefficienteCustom !== "" ? coefficienteCustom : coefficienteDefault.toString()}
+                  onChange={(e) => setCoefficienteCustom(e.target.value)}
+                  style={{
+                    width: 60,
+                    padding: "4px 24px 4px 8px",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    background: "var(--bg-card)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 6,
+                    color: "var(--text-primary)",
+                    fontFamily: "Space Mono, monospace",
+                  }}
+                />
+                <span style={{ position: "absolute", right: 8, color: "var(--text-muted)" }}>%</span>
+              </div>
               {config.codiciAteco.length > 0 && (
-                <span style={{ color: "var(--text-muted)" }}>
-                  {" "}
+                <span style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>
                   (ATECO: {config.codiciAteco.join(", ")})
                 </span>
               )}
             </div>
-            <div>
-              <span style={{ color: "var(--text-muted)" }}>
-                Aliquota IRPEF:{" "}
-              </span>
-              <strong>{(aliquotaIrpef * 100).toFixed(0)}%</strong>
-              {config.aliquotaOverride !== null && (
-                <span style={{ color: "var(--text-muted)" }}> (custom)</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <label htmlFor="irpef-input" style={{ color: "var(--text-muted)" }}>IRPEF:</label>
+              <div style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+                <input
+                  id="irpef-input"
+                  type="text"
+                  inputMode="decimal"
+                  value={aliquotaIrpefCustom !== "" ? aliquotaIrpefCustom : (aliquotaIrpefDefault * 100).toString()}
+                  onChange={(e) => setAliquotaIrpefCustom(e.target.value)}
+                  style={{
+                    width: 50,
+                    padding: "4px 24px 4px 8px",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    background: "var(--bg-card)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 6,
+                    color: "var(--text-primary)",
+                    fontFamily: "Space Mono, monospace",
+                  }}
+                />
+                <span style={{ position: "absolute", right: 8, color: "var(--text-muted)" }}>%</span>
+              </div>
+              {aliquotaIrpefCustom === "" && config.aliquotaOverride !== null && (
+                <span style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>(custom)</span>
               )}
-              {config.aliquotaOverride === null && anniAttivita < 5 && (
-                <span style={{ color: "var(--accent-green)" }}>
-                  {" "}
-                  (agevolata)
-                </span>
+              {aliquotaIrpefCustom === "" && config.aliquotaOverride === null && anniAttivita < 5 && (
+                <span style={{ color: "var(--accent-green)", fontSize: "0.75rem" }}>(agevolata)</span>
               )}
             </div>
-            <div>
-              <span style={{ color: "var(--text-muted)" }}>INPS: </span>
-              <strong>{(INPS_GESTIONE_SEPARATA * 100).toFixed(2)}%</strong>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <label htmlFor="inps-input" style={{ color: "var(--text-muted)" }}>INPS:</label>
+              <div style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+                <input
+                  id="inps-input"
+                  type="text"
+                  inputMode="decimal"
+                  value={inpsCustom !== "" ? inpsCustom : (INPS_GESTIONE_SEPARATA * 100).toFixed(2)}
+                  onChange={(e) => setInpsCustom(e.target.value)}
+                  style={{
+                    width: 60,
+                    padding: "4px 24px 4px 8px",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    background: "var(--bg-card)",
+                    border: "1px solid var(--border)",
+                    borderRadius: 6,
+                    color: "var(--text-primary)",
+                    fontFamily: "Space Mono, monospace",
+                  }}
+                />
+                <span style={{ position: "absolute", right: 8, color: "var(--text-muted)" }}>%</span>
+              </div>
             </div>
           </div>
         </div>
@@ -260,7 +330,7 @@ export function Simulatore() {
           <div className="stat-value" style={{ color: "var(--accent-orange)" }}>
             <Currency amount={calculations.inps} />
           </div>
-          <div className="stat-label">Gestione Separata 26.07%</div>
+          <div className="stat-label">Gestione Separata {(aliquotaInps * 100).toFixed(2)}%</div>
         </div>
 
         <div className="card">
@@ -375,7 +445,7 @@ export function Simulatore() {
                 </tr>
                 <tr>
                   <td style={{ color: "var(--accent-orange)" }}>
-                    - INPS (26.07%)
+                    - INPS ({(aliquotaInps * 100).toFixed(2)}%)
                   </td>
                   <td
                     style={{
