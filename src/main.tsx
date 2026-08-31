@@ -8,6 +8,9 @@ async function boot() {
   if (await runLegacyOriginHandoff()) return
 
   await runCrossDomainMigration()
+  // Senza storage persistente Chrome può evincere IndexedDB quando il disco è
+  // quasi pieno (successo il 2026-08-31: dati utente cancellati dal browser).
+  navigator.storage?.persist?.().catch(() => {})
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       <ThemeProvider>
